@@ -990,6 +990,114 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "Ship",
+            "id": "4c695d3d-fb65-43ec-b747-401dac6b4927",
+            "actions": [
+                {
+                    "name": "Action1",
+                    "type": "Button",
+                    "id": "b5610b29-06e2-4ebf-adb6-9c1500f9c916",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Action2",
+                    "type": "Button",
+                    "id": "69a77341-34cc-42cd-8848-f10efc994645",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Action3",
+                    "type": "Button",
+                    "id": "43282b8f-b880-4e2a-b853-e092641fb15e",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Action4",
+                    "type": "Button",
+                    "id": "29cf741f-c3ee-4399-b547-4b8e008808c8",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Transfer",
+                    "type": "Button",
+                    "id": "c584c9e8-8f5d-4196-b8a9-14173240da54",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "99b3d902-f1c7-41b3-8b86-87242004fd2f",
+                    "path": "<Keyboard>/1",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Action1",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "0568444b-1d5f-4754-b685-7eace2afb7b1",
+                    "path": "<Keyboard>/2",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Action2",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b6ed14fd-af7f-48af-b0f0-a20b23dc05b0",
+                    "path": "<Keyboard>/3",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Action3",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "14d407a0-8044-4fe9-95cc-6532da450361",
+                    "path": "<Keyboard>/4",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Action4",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "23bf2d62-b1d6-4894-8325-234d4506c848",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Transfer",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": [
