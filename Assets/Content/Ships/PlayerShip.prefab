@@ -167,8 +167,9 @@ MonoBehaviour:
   m_sourceBody: {fileID: 0}
   m_radiusFactor: 0.76
   m_axis: {x: 0, y: 1, z: 0}
-  m_rotateSpeed: -20
-  m_angle: -8.1
+  m_rotateSpeed: 0.1
+  m_normalisedPosition: 0.3260498
+  m_manualPosition: 0
 --- !u!114 &4044412422970744175
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -428,13 +429,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8484921082141308020}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: -3.0792072, y: 0, z: 3.25}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 3.0792007, y: 0, z: -3.3000011}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7732121675965879695}
-  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3898717048525174300
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -502,7 +503,7 @@ MonoBehaviour:
       Size: {x: 0.8, y: 0.8}
       Offset: {x: 0, y: 0}
   CenterOnActivate: 1
-  TargetOffset: {x: 0, y: 0, z: 2.25}
+  TargetOffset: {x: 0, y: 0, z: -2.3}
   Damping: {x: 1, y: 1, z: 1}
   Lookahead:
     Enabled: 0

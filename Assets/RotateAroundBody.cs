@@ -1,4 +1,5 @@
 using System;
+using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -16,11 +17,13 @@ public class RotateAroundBody : MonoBehaviour
 
     [SerializeField] 
     private float m_rotateSpeed;
+    
+    [SerializeField]
+    [Range(0,1)]
+    private float m_normalisedPosition;
 
     [SerializeField]
-    private float m_angle;
-
-    private float m_progress;
+    private bool m_manualPosition = true;
     
     private void Update()
     {
@@ -33,13 +36,14 @@ public class RotateAroundBody : MonoBehaviour
         var centre = m_sourceBody.position;
         var radius =  m_radiusFactor*m_sourceBody.transform.localScale.x ;
 
-        var angle = Mathf.Repeat(Time.time * m_rotateSpeed, 360);
-        angle = Mathf.Deg2Rad*( angle);
+        m_normalisedPosition = m_manualPosition? m_normalisedPosition: Mathf.Repeat(Time.time * m_rotateSpeed, 1);
+        
+        var angle = -Mathf.Deg2Rad*( m_normalisedPosition*360);
 
         var point = centre + radius *(( Mathf.Cos(angle) * m_sourceBody.transform.right) + (Mathf.Sin(angle) * m_sourceBody.transform.forward));
 
         transform.position = point;
 
-        transform.rotation = Quaternion.LookRotation((-Mathf.Sin(angle) * m_sourceBody.transform.right) + (Mathf.Cos(angle) * m_sourceBody.transform.forward), m_sourceBody.up);
+        transform.rotation = Quaternion.LookRotation((Mathf.Sin(angle) * m_sourceBody.transform.right) - (Mathf.Cos(angle) * m_sourceBody.transform.forward), m_sourceBody.up);
     }
 }
