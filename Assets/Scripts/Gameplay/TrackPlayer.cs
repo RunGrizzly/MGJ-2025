@@ -1,3 +1,4 @@
+#nullable enable
 using System.Linq;
 using Events;
 using SGS29.Utilities;
@@ -42,23 +43,20 @@ namespace Gameplay
                 return;
             }
 
-            if (_currentTrack.CurrentBeat != null)
+            switch (_currentTrack.CurrentBeat)
             {
-                if (action == _currentTrack.CurrentBeat.Action)
-                {
+                case { State: Beat.States.InProgress } when action == _currentTrack.CurrentBeat.Action:
                     _currentTrack.CurrentBeat.SetState(Beat.States.Success);
-                    Debug.Log("HIT THE BEAT");
-                }
-                else
-                {
+                    Debug.Log("Hit the beat");
+                    break;
+                case { State: Beat.States.InProgress }:
                     _currentTrack.CurrentBeat.SetState(Beat.States.Failed);
-                    Debug.Log("FUCKED THE BEAT");
-                }
-            }
-            else
-            {
-                _currentTrack.SetState(PlayableTrack.States.Failed);
-                Debug.Log("FUCKED THE BEAT 2");
+                    Debug.Log("Tried to hit the wrong beat");
+                    break;
+                case null:
+                    _currentTrack.SetState(PlayableTrack.States.Failed);
+                    Debug.Log("Tried to hit a beat, but no beat");
+                    break;
             }
 
             UpdateTrackState();
@@ -87,13 +85,10 @@ namespace Gameplay
             _currentTrack.SetProgress(_progress);
             var currentSegment = _currentTrack.CurrentBeat;
 
-            if (previousSegment != null
-                && currentSegment != previousSegment
-                && previousSegment.Action != BeatAction.Empty
-                && previousSegment.State != Beat.States.Success)
+            if (DidMissABeat(previousSegment, currentSegment))
             {
-                previousSegment.SetState(Beat.States.Missed);
-                Debug.Log("MISSED THE BEAT");
+                // previousSegment.SetState(Beat.States.Missed);
+                // Debug.Log("Missed a beat");
             }
 
             UpdateTrackState();
@@ -113,6 +108,14 @@ namespace Gameplay
                     _eventManager.DispatchEvent(trackEvent);
                 }
             }
+        }
+
+        private static bool DidMissABeat(Beat? previous, Beat? current)
+        {
+            var isDifferentBeats = previous == current;
+            var wasPreviousBeatAction = previous != null && previous.Action != BeatAction.Empty;
+            var wasPreviousBeatHit = previous is { State: Beat.States.Success };
+            return isDifferentBeats && wasPreviousBeatAction && !wasPreviousBeatHit;
         }
     }
 

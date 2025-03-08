@@ -19,8 +19,8 @@ namespace Gameplay
             var worldPosition = GenerateWorldPosition(number);
             var worldRadius = Random.Range(500f, 600f);
             world.Init(worldRadius, worldPosition);
-            var trackDefinition = _trackGenerator.Generate(4, 1f / number);
-            var track = PlayableTrack.FromTrackDefinition(trackDefinition, 1f, 1.2f);
+            var trackDefinition = _trackGenerator.Generate(4, 0f);
+            var track = PlayableTrack.FromTrackDefinition(trackDefinition, 1f, 0.5f);
             
             return new Level(world, track, number);
         }
