@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Events;
@@ -15,7 +14,6 @@ public class GameManager : MonoBehaviour
     [SerializeField] private LevelGenerator _levelGenerator;
     [SerializeField] private Transform _shipPrefab;
     private EventManager _eventManager;
-    private Dictionary<Gameplay.Beat, float> _normalizedBeatTimes;
     private TrackDefinition _trackDefinition;
     private GameplayState _currentState;
     private List<Level> _levels;
@@ -77,21 +75,6 @@ public class GameManager : MonoBehaviour
         {
             _progress = Mathf.Repeat(_progress, _trackPlayer._currentTrack.Duration);
         }
-    }
-
-    public void OnDrawGizmos()
-    {
-        // if (_normalizedBeatTimes == null)
-        // {
-        //     return;
-        // }
-        //
-        // foreach (var (beat, normalizedTime) in _normalizedBeatTimes)
-        // {
-        //     Gizmos.color = beat.Action == BeatAction.Empty ? Color.red : Color.green;
-        //     Gizmos.DrawWireSphere(
-        //         OrbitHelpers.OrbitPointFromNormalisedPosition(_orbitManager.MainOrbit, normalizedTime), 20f);
-        // }
     }
 
     private void TrackPassed()
