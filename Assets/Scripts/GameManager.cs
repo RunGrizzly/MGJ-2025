@@ -19,6 +19,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Spline _spline;
     public SplineContainer _container;
     private EventManager _eventManager;
+    private Dictionary<Gameplay.Beat, float> _normalizedBeatTimes;
     private TrackDefinition _trackDefinition;
     private GameplayState _currentState;
     private List<Level> _levels;
@@ -43,7 +44,7 @@ public class GameManager : MonoBehaviour
         _eventManager = SM.Instance<EventManager>();
         _eventManager.RegisterListener<TrackStarted>(evt => Debug.Log("Track started"));
         _eventManager.RegisterListener<GameStarted>(StartTrack);
-        _eventManager.RegisterListener<GameOver>(evt => TrackPassed());
+        _eventManager.RegisterListener<GameOver>(evt => TrackFailed());
         _eventManager.RegisterListener<TrackPassed>(evt => TrackPassed());
         _eventManager.RegisterListener<GameOver>(evt => Debug.Log("GAME OVER LOSER"));
 
@@ -63,6 +64,7 @@ public class GameManager : MonoBehaviour
     private void StartTrack(GameStarted _)
     {
         _trackPlayer.Play(_currentLevel.Track);
+        _normalizedBeatTimes = _trackPlayer._currentTrack.GetNormalizedBeatTimes();
         _currentState = GameplayState.OnTrack;
     }
 
@@ -80,7 +82,8 @@ public class GameManager : MonoBehaviour
         _playerShip.position = OrbitHelpers.OrbitPointFromNormalisedPosition(_currentLevel.World.Orbit,
             _progress / _currentLevel.Track.Duration);
 
-        _playerShip.rotation = OrbitHelpers.ForwardRotationFromNormalisePosition(_currentLevel.World.Orbit,
+        
+        _playerShip.rotation = OrbitHelpers.ForwardRotationFromNormalisePosition(_currentLevel.World.Orbit, 
             _progress / _currentLevel.Track.Duration);
 
         if (_trackPlayer._currentTrack.State == PlayableTrack.States.Playing)

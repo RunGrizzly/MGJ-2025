@@ -1,111 +1,183 @@
 using System.Collections.Generic;
 using Events;
 using Gameplay;
+using Gameplay.TrackEvents;
 using SGS29.Utilities;
 using UnityEngine;
 using RotaryHeart.Lib.SerializableDictionary;
-using UnityEngine.InputSystem;
-
 
 [System.Serializable]
 public class BeatActionSpriteDictionary : SerializableDictionaryBase<BeatAction, Sprite>
 {
+  
+}
+
+
+[System.Serializable]
+public class BeatStateGameObjectDictionary : SerializableDictionaryBase<Beat.States, GameObject>
+{
+  
 }
 
 public class UIHandler : MonoBehaviour
 {
-    public BeatPrompt BeatPromptTemplate;
-    public BeatActionSpriteDictionary ActionSprites = new BeatActionSpriteDictionary();
+  public Canvas HUDCanvas = null;
+  
+  public BeatPrompt BeatPromptTemplate;
+  private List<BeatPrompt> BeatPrompts = new List<BeatPrompt>();
 
-    private List<BeatPrompt> BeatPrompts = new List<BeatPrompt>();
+  public BeatActionSpriteDictionary ActionSprites = new BeatActionSpriteDictionary();
 
-    private void OnEnable()
+  public BeatStateGameObjectDictionary AttemptSplashes = new BeatStateGameObjectDictionary();
+  
+  
+  
+  private void OnEnable()
+  {
+    SM.Instance<EventManager>().RegisterListener<NewLevel>(OnNewLevel);
+    SM.Instance<EventManager>().RegisterListener<BeatAttemptEvent>(OnBeatAttempt);
+    
+    SM.Instance<EventManager>().RegisterListener<LevelPassed>(OnLevelPassed);
+  }
+
+  private void OnDisable()
+  {
+    SM.Instance<EventManager>().UnregisterListener<NewLevel>(OnNewLevel);
+    SM.Instance<EventManager>().UnregisterListener<BeatAttemptEvent>(OnBeatAttempt);
+    
+    SM.Instance<EventManager>().UnregisterListener<LevelPassed>(OnLevelPassed);
+  }
+
+  private void OnLevelPassed(LevelPassed context)
+  {
+    foreach (var prompt in BeatPrompts)
     {
-        SM.Instance<EventManager>().RegisterListener<NewLevel>(OnNewLevel);
-        SM.Instance<EventManager>().RegisterListener<BeatAttemptEvent>(OnBeatAttempt);
+      Destroy(prompt.gameObject);
     }
-
-    private void OnDisable()
+    
+    BeatPrompts.Clear();
+    
+    foreach (var beat in context.Level.ExitTrack.GetNormalizedBeatTimes())
     {
-        SM.Instance<EventManager>().UnregisterListener<NewLevel>(OnNewLevel);
-        SM.Instance<EventManager>().UnregisterListener<BeatAttemptEvent>(OnBeatAttempt);
-    }
+      if (beat.Key.Action != BeatAction.Empty)
+      {
+        var beatPromptInstance =  Instantiate(BeatPromptTemplate, null);
+        beatPromptInstance.Beat = beat.Key;
 
-    private void OnNewLevel(NewLevel context)
-    {
-        foreach (var (beat, normalizedPosition) in context.Level.Track.GetNormalizedBeatTimes())
+        Sprite actionSprite = null;
+        
+        if(ActionSprites.TryGetValue(beat.Key.Action, out actionSprite))
         {
-            if (beat.Action != BeatAction.Empty)
-            {
-                var beatPromptInstance = Instantiate(BeatPromptTemplate, null);
-                beatPromptInstance.Beat = beat;
-
-                Sprite actionSprite = null;
-
-                if (ActionSprites.TryGetValue(beat.Action, out actionSprite))
-                {
-                    beatPromptInstance.PromptImage.sprite = ActionSprites[beat.Action];
-                }
-
-                beatPromptInstance.transform.position =
-                    OrbitHelpers.OrbitPointFromNormalisedPosition(context.Level.World.Orbit, normalizedPosition);
-
-                BeatPrompts.Add(beatPromptInstance);
-            }
+          beatPromptInstance.FormatPrompt(true,true);
+          beatPromptInstance.PromptImageA.sprite = ActionSprites[beat.Key.Action];    
+          beatPromptInstance.PromptImageB.sprite = ActionSprites[beat.Key.Action];    
         }
+        
+        beatPromptInstance.transform.position = OrbitHelpers.OrbitPointFromNormalisedPosition( context.Level.World.Orbit,beat.Value);
+      }
     }
-
-    private void OnBeatAttempt(BeatAttemptEvent context)
+  }
+  
+  private void OnNewLevel(NewLevel context)
+  {
+    foreach (var beat in context.Level.Track.GetNormalizedBeatTimes())
     {
-        foreach (var beatPrompt in BeatPrompts)
+      if (beat.Key.Action != BeatAction.Empty)
+      {
+        var beatPromptInstance =  Instantiate(BeatPromptTemplate, null);
+        beatPromptInstance.Beat = beat.Key;
+
+        Sprite actionSprite = null;
+        
+        if(ActionSprites.TryGetValue(beat.Key.Action, out actionSprite))
         {
-            if (beatPrompt.Beat == context.Beat)
-            {
-                if (context.Beat.State == Gameplay.Beat.States.Success)
-                {
-                    LeanTween.value(1f, 1.2f, 0.45f)
-                        .setOnUpdate((val) => beatPrompt.transform.localScale = Vector3.one * val)
-                        .setOnComplete(() => beatPrompt.transform.localScale = Vector3.one);
-                }
-
-                else if (context.Beat.State == Gameplay.Beat.States.Failed)
-                {
-                }
-
-                else if (context.Beat.State == Gameplay.Beat.States.Missed)
-                {
-                }
-
-                return;
-            }
+          beatPromptInstance.FormatPrompt(true,false);
+          beatPromptInstance.PromptImageA.sprite = ActionSprites[beat.Key.Action];    
         }
+        
+        beatPromptInstance.transform.position = OrbitHelpers.OrbitPointFromNormalisedPosition( context.Level.World.Orbit,beat.Value);
+        
+        BeatPrompts.Add(beatPromptInstance);
+      }
     }
+  }
 
-    private void Start()
+  private void OnBeatAttempt(BeatAttemptEvent context)
+  {
+    foreach (var beatPrompt in BeatPrompts)
     {
-        // foreach (var beat in SpawnOnOrbit.Beats)
-        // {
-        // var beatPromptInstance =  Instantiate(BeatPromptTemplate, null);
-        // beatPromptInstance.Beat = beat;
-        //
-        // Orbit targetOrbit = new Orbit()
-        //
-        // beatPromptInstance.transform.position =OrbitHelpers.OrbitPointFromNormalisedPosition(  OrbitManager.MainOrbit,beat.Position);
-        //
-        // BeatPrompts.Add(beatPromptInstance);
-        // }
-    }
+      if (beatPrompt.Beat == context.Beat)
+      {
 
-    // private void OnDisable()
+        GameObject attemptSplash = null;
+        GameObject newSplash = null;
+        
+        if (context.Beat.State == Gameplay.Beat.States.Success)
+        {
+          if (AttemptSplashes.TryGetValue(Beat.States.Success,out attemptSplash))
+          {
+           newSplash = Instantiate(attemptSplash,HUDCanvas.transform);
+          }
+        }
+        
+        else if (context.Beat.State == Gameplay.Beat.States.Failed)
+        {
+          if (AttemptSplashes.TryGetValue(Beat.States.Failed,out attemptSplash))
+          {
+           newSplash = Instantiate(attemptSplash,HUDCanvas.transform);
+          }
+        }
+        
+        else if (context.Beat.State == Gameplay.Beat.States.Missed)
+        {
+          if (AttemptSplashes.TryGetValue(Beat.States.Missed,out attemptSplash))
+          {
+           newSplash =Instantiate(attemptSplash,HUDCanvas.transform);
+          }
+        }
+
+        if (newSplash != null)
+        {
+          LeanTween.value(gameObject, 1f, 1.055f, 0.45f)
+            .setEase(LeanTweenType.punch)
+            .setOnUpdate((float val) => newSplash.transform.GetChild(0).localScale = Vector3.one * val);
+          
+          LeanTween.value(gameObject, 1f, 0, 0.55f)
+            .setOnUpdate((float val) => newSplash.GetComponent<CanvasGroup>().alpha =  val)
+            .setOnComplete(() => Destroy(newSplash));
+        }
+
+        return;
+      }
+      
+    }
+  }
+  
+  private void Start()
+  {
+    // foreach (var beat in SpawnOnOrbit.Beats)
     // {
-    //   foreach (var beatPrompt in BeatPrompts)
-    //   {
-    //     if (beatPrompt.gameObject != null)
-    //     {
-    //       DestroyImmediate(beatPrompt.gameObject);
-    //     }
-    //   }
-    //   
-    //   BeatPrompts.Clear();
+    // var beatPromptInstance =  Instantiate(BeatPromptTemplate, null);
+    // beatPromptInstance.Beat = beat;
+    //
+    // Orbit targetOrbit = new Orbit()
+    //
+    // beatPromptInstance.transform.position =OrbitHelpers.OrbitPointFromNormalisedPosition(  OrbitManager.MainOrbit,beat.Position);
+    //
+    // BeatPrompts.Add(beatPromptInstance);
     // }
+  }
+
+  // private void OnDisable()
+  // {
+  //   foreach (var beatPrompt in BeatPrompts)
+  //   {
+  //     if (beatPrompt.gameObject != null)
+  //     {
+  //       DestroyImmediate(beatPrompt.gameObject);
+  //     }
+  //   }
+  //   
+  //   BeatPrompts.Clear();
+  // }
 }

@@ -39,7 +39,7 @@ namespace Gameplay
             if (state == States.Upcoming) return;
 
             var beatEvent = new BeatAttemptEvent(this);
-            //SM.Instance<EventManager>().DispatchEvent(beatEvent);
+            SM.Instance<EventManager>().DispatchEvent(beatEvent);
         }
     }
 
