@@ -34,7 +34,6 @@ public class GameManager : MonoBehaviour
     public void OnEnable()
     {
         _playerShip = Instantiate(_shipPrefab);
-        // _trackDefinition = _trackGenerator.Generate(4, 0.5f);
 
         _eventManager = SM.Instance<EventManager>();
         _eventManager.RegisterListener<TrackStarted>(evt => Debug.Log("Track started"));
@@ -42,9 +41,6 @@ public class GameManager : MonoBehaviour
         _eventManager.RegisterListener<GameOver>(evt => TrackFailed());
         _eventManager.RegisterListener<TrackPassed>(evt => TrackPassed());
         _eventManager.RegisterListener<GameOver>(evt => Debug.Log("GAME OVER LOSER"));
-
-       
-    
     }
 
     public void Start()

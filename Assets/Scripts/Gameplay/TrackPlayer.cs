@@ -30,6 +30,7 @@ namespace Gameplay
             _progress = 0;
             _isPlaying = true;
             _currentTrack.SetState(PlayableTrack.States.Playing);
+            _currentTrack.SetProgress(_progress);
             _eventManager = SM.Instance<EventManager>();
             _eventManager.DispatchEvent(new TrackEvents.TrackStarted(_currentTrack));
         }

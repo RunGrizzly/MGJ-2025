@@ -68,7 +68,7 @@ namespace Gameplay
             var normalizedBeatTimes = new Dictionary<Beat, float>();
             foreach (var beat in Beats)
             {
-                normalizedBeatTimes.Add(beat, beat.StartTime / Duration);
+                normalizedBeatTimes.Add(beat, (beat.StartTime + beat.EndTime) / 2 / Duration);
                 // Debug.Log($"KYLEMESS: Beat times: {beat.StartTime / Duration}");
             }
 
