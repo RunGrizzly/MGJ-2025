@@ -27,13 +27,16 @@ public class UIHandler : MonoBehaviour
   
   private void OnNewLevel(NewLevel context)
   {
-    foreach (var beat in context.Level.Track.Beats)
+    foreach (var beat in context.Level.Track.GetNormalizedBeatTimes())
     {
-    var beatPromptInstance =  Instantiate(BeatPromptTemplate, null);
-    beatPromptInstance.Beat = beat;
+      if (beat.Key.Action != BeatAction.Empty)
+      {
+        var beatPromptInstance =  Instantiate(BeatPromptTemplate, null);
+        beatPromptInstance.Beat = beat.Key;
     
-    beatPromptInstance.transform.position = OrbitHelpers.OrbitPointFromNormalisedPosition( context.Level.World.Orbit,beat.StartTime);
-    BeatPrompts.Add(beatPromptInstance);
+        beatPromptInstance.transform.position = OrbitHelpers.OrbitPointFromNormalisedPosition( context.Level.World.Orbit,beat.Value);
+        BeatPrompts.Add(beatPromptInstance);        
+      }
     }
   }
 

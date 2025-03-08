@@ -77,23 +77,16 @@ public class AudioHandler : MonoBehaviour
    
   }
   
-  
-
-  // private void OnValidate()
-  // {
-  //   // GameTempo = Mathf.Repeat(GameTempo + Time.deltaTime*SpeedFactor, 1);
-  //   EvaluateSoundscape();
-  // }
-
   private void PlaySting(string stingID)
   {
+    StingAudioSource.Stop();
+    
     AudioClip newSting = null;
-
+    
     if (Stings.TryGetValue(stingID, out newSting))
     {
-
-      StingAudioSource.PlayOneShot(newSting);
-
+      StingAudioSource.clip = newSting;
+      StingAudioSource.Play();
     }
   }
 
@@ -196,9 +189,4 @@ public class AudioHandler : MonoBehaviour
     source.Pause();
     fadeOut = null;
   }
-  
-  
-  
-  
-  
 }
