@@ -92,7 +92,7 @@ namespace Gameplay
                 && previousSegment.State != Beat.States.Success)
             {
                 previousSegment.SetState(Beat.States.Missed);
-                // Debug.Log("MISSED THE BEAT");
+                Debug.Log("MISSED THE BEAT");
             }
 
             UpdateTrackState();
