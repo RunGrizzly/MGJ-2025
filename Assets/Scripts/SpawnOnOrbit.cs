@@ -18,12 +18,12 @@ public class SpawnOnOrbit : MonoBehaviour
    
    public List<Beat> Beats;
    
-   private void OnDrawGizmos()
-   {
-       Gizmos.color = OrbitManager.MainOrbit.Color;
-       foreach (var prompt in Beats)
-       {
-           Gizmos.DrawSphere(OrbitManager.OrbitPointFromNormalisedPosition(  OrbitManager.MainOrbit,prompt.Position),prompt.Size);
-       }
-   }
+   // private void OnDrawGizmos()
+   // {
+   //     Gizmos.color = OrbitManager.MainOrbit.Color;
+   //     foreach (var prompt in Beats)
+   //     {
+   //         Gizmos.DrawSphere(OrbitManager.OrbitPointFromNormalisedPosition(  OrbitManager.MainOrbit,prompt.Position),prompt.Size);
+   //     }
+   // }
 }

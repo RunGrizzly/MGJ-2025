@@ -36,7 +36,7 @@ public class OrbitManager : MonoBehaviour
     
     [SerializeField]
     [Range(0,1)]
-    private float m_normalisedPosition;
+    public float m_normalisedPosition;
 
     [SerializeField]
     private bool m_manualPosition = true;
