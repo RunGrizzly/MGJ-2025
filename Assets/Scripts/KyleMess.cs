@@ -13,18 +13,24 @@ public class KyleMess : MonoBehaviour
     [SerializeField] private TrackPlayer _trackPlayer;
     private EventManager _eventManager;
     private Dictionary<Gameplay.Beat, float> _normalizedBeatTimes;
-
+    private TrackDefinition _trackDefinition;
+    
     public void OnEnable()
     {
-        var trackDefinition = _trackGenerator.Generate(4, 0.5f);
-        _trackPlayer.Play(trackDefinition);
-        _normalizedBeatTimes = _trackPlayer._currentTrack.GetNormalizedBeatTimes();
-
+        _trackDefinition = _trackGenerator.Generate(4, 0.5f);
+        
         _eventManager = SM.Instance<EventManager>();
         _eventManager.RegisterListener<TrackStarted>(evt => Debug.Log("Track started"));
+        _eventManager.RegisterListener<GameStarted>(StartTrack);
         _eventManager.RegisterListener<TrackFailed>(evt => Debug.Log("Track failed"));
         _eventManager.RegisterListener<TrackPassed>(evt => Debug.Log("Track passed"));
         _eventManager.RegisterListener<GameOver>(evt => Debug.Log("GAME OVER LOSER"));
+    }
+
+    private void StartTrack(GameStarted _)
+    {
+        _trackPlayer.Play(_trackDefinition);
+        _normalizedBeatTimes = _trackPlayer._currentTrack.GetNormalizedBeatTimes();
     }
 
     public void OnDrawGizmos()

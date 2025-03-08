@@ -1,6 +1,6 @@
 ﻿namespace Events
 {
-    public class StartGame : IEvent
+    public class GameStarted : IEvent
     {
     }
 
