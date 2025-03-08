@@ -37,7 +37,7 @@ public class GameManager : MonoBehaviour
         _eventManager = SM.Instance<EventManager>();
         _eventManager.RegisterListener<TrackStarted>(evt => Debug.Log("Track started"));
         _eventManager.RegisterListener<GameStarted>(StartTrack);
-        _eventManager.RegisterListener<GameOver>(evt => TrackFailed());
+        _eventManager.RegisterListener<GameOver>(evt => TrackPassed());
         _eventManager.RegisterListener<TrackPassed>(evt => TrackPassed());
         _eventManager.RegisterListener<GameOver>(evt => Debug.Log("GAME OVER LOSER"));
     }
@@ -52,7 +52,6 @@ public class GameManager : MonoBehaviour
     private void StartTrack(GameStarted _)
     {
         _trackPlayer.Play(_currentLevel.Track);
-        _normalizedBeatTimes = _trackPlayer._currentTrack.GetNormalizedBeatTimes();
         _currentState = GameplayState.OnTrack;
     }
 
