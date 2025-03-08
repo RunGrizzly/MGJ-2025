@@ -54,8 +54,7 @@ public class GameManager : MonoBehaviour
     public void Start()
     {
         _levels = Enumerable.Range(0, 5).Select(_levelGenerator.Generate).ToList();
-        _currentLevel = _levels.First();
-        SM.Instance<EventManager>().DispatchEvent(new NewLevel(_currentLevel));
+        StartNextLevel();
     }
 
     private void StartTrack(GameStarted _)
@@ -66,7 +65,12 @@ public class GameManager : MonoBehaviour
 
     private void StartNextLevel()
     {
+        if (_currentLevel == null)
+        {
+            _currentLevel = _levels.First();
+        }
         _currentLevel = _levels[_currentLevel.Number + 1];
+        SM.Instance<EventManager>().DispatchEvent(new NewLevel(_currentLevel));
         StartTrack(null);
         _splineAnimate.Completed -= StartNextLevel;
     }
