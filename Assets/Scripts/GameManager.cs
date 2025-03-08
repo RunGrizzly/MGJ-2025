@@ -60,7 +60,7 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        if (_currentState != GameplayState.OnTrack)
+        if (_currentState is not (GameplayState.OnTrack or GameplayState.OnExitTrack))
         {
             return;
         }
@@ -70,7 +70,7 @@ public class GameManager : MonoBehaviour
         _playerShip.position = OrbitHelpers.OrbitPointFromNormalisedPosition(_currentLevel.World.Orbit,
             _progress / _currentLevel.Track.Duration);
 
-        _playerShip.rotation = OrbitHelpers.ForwardRotationFromNormalisePosition(_currentLevel.World.Orbit, 
+        _playerShip.rotation = OrbitHelpers.ForwardRotationFromNormalisePosition(_currentLevel.World.Orbit,
             _progress / _currentLevel.Track.Duration);
 
         if (_trackPlayer._currentTrack.State == PlayableTrack.States.Playing)
@@ -96,7 +96,20 @@ public class GameManager : MonoBehaviour
 
     private void TrackPassed()
     {
-        _currentState = GameplayState.Transitioning;
+        switch (_currentState)
+        {
+            case GameplayState.OnTrack:
+                _currentState = GameplayState.OnExitTrack;
+                _trackPlayer.Play(_currentLevel.ExitTrack);
+                _trackPlayer.Tick(_progress);
+                _eventManager.DispatchEvent(new LevelPassed(_currentLevel));
+                break;
+            case GameplayState.OnExitTrack:
+                _currentState = GameplayState.Transitioning;
+                break;
+            default:
+                return;
+        }
     }
 
     private void TrackFailed()
