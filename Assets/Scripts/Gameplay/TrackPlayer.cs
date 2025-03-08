@@ -57,7 +57,7 @@ namespace Gameplay
                 return;
             }
 
-            _progress += Time.deltaTime * ( _rate);
+            _progress += Time.deltaTime;
             _orbitManager.m_normalisedPosition = _progress / _currentTrack.Duration;
 
             var previousSegment = _currentTrack.CurrentAction;
