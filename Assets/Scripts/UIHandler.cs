@@ -4,8 +4,8 @@ using System.Security.Cryptography;
 using UnityEngine;
 using UnityEngine.UI;
 
-[ExecuteAlways]
-public class UIManager : MonoBehaviour
+//[ExecuteAlways]
+public class UIHandler : MonoBehaviour
 {
   public SpawnOnOrbit SpawnOnOrbit;
   public OrbitManager OrbitManager;
@@ -14,7 +14,7 @@ public class UIManager : MonoBehaviour
 
   public List<BeatPrompt> BeatPrompts = new List<BeatPrompt>();
   
-  private void OnEnable()
+  private void Start()
   {
     foreach (var beat in SpawnOnOrbit.Beats)
     {
@@ -26,16 +26,16 @@ public class UIManager : MonoBehaviour
     }
   }
 
-  private void OnDisable()
-  {
-    foreach (var beatPrompt in BeatPrompts)
-    {
-      if (beatPrompt.gameObject != null)
-      {
-        DestroyImmediate(beatPrompt.gameObject);
-      }
-    }
-    
-    BeatPrompts.Clear();
-  }
+  // private void OnDisable()
+  // {
+  //   foreach (var beatPrompt in BeatPrompts)
+  //   {
+  //     if (beatPrompt.gameObject != null)
+  //     {
+  //       DestroyImmediate(beatPrompt.gameObject);
+  //     }
+  //   }
+  //   
+  //   BeatPrompts.Clear();
+  // }
 }
