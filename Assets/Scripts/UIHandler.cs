@@ -1,17 +1,24 @@
 using System.Collections.Generic;
 using Events;
 using Gameplay;
-using Gameplay.TrackEvents;
 using SGS29.Utilities;
 using UnityEngine;
-using Gameplay;
+using RotaryHeart.Lib.SerializableDictionary;
+using UnityEngine.InputSystem;
+
+
+[System.Serializable]
+public class BeatActionSpriteDictionary : SerializableDictionaryBase<BeatAction, Sprite>
+{
+  
+}
 
 public class UIHandler : MonoBehaviour
 {
   public BeatPrompt BeatPromptTemplate;
-
   public List<BeatPrompt> BeatPrompts = new List<BeatPrompt>();
 
+  public BeatActionSpriteDictionary ActionSprites = new BeatActionSpriteDictionary();
 
   private void OnEnable()
   {
@@ -33,9 +40,17 @@ public class UIHandler : MonoBehaviour
       {
         var beatPromptInstance =  Instantiate(BeatPromptTemplate, null);
         beatPromptInstance.Beat = beat.Key;
-    
+
+        Sprite actionSprite = null;
+        
+        if(ActionSprites.TryGetValue(beat.Key.Action, out actionSprite))
+        {
+          beatPromptInstance.PromptImage.sprite = ActionSprites[beat.Key.Action];    
+        }
+        
         beatPromptInstance.transform.position = OrbitHelpers.OrbitPointFromNormalisedPosition( context.Level.World.Orbit,beat.Value);
-        BeatPrompts.Add(beatPromptInstance);        
+        
+        BeatPrompts.Add(beatPromptInstance);
       }
     }
   }
