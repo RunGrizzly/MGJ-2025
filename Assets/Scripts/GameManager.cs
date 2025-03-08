@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Events;
@@ -20,7 +19,6 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Spline _spline;
     public SplineContainer _container;
     private EventManager _eventManager;
-    private Dictionary<Gameplay.Beat, float> _normalizedBeatTimes;
     private TrackDefinition _trackDefinition;
     private GameplayState _currentState;
     private List<Level> _levels;
@@ -34,6 +32,7 @@ public class GameManager : MonoBehaviour
         InHangar,
         Transitioning,
         OnTrack,
+        OnExitTrack,
         Dead
     }
 
@@ -44,7 +43,7 @@ public class GameManager : MonoBehaviour
         _eventManager = SM.Instance<EventManager>();
         _eventManager.RegisterListener<TrackStarted>(evt => Debug.Log("Track started"));
         _eventManager.RegisterListener<GameStarted>(StartTrack);
-        _eventManager.RegisterListener<GameOver>(evt => TrackFailed());
+        _eventManager.RegisterListener<GameOver>(evt => TrackPassed());
         _eventManager.RegisterListener<TrackPassed>(evt => TrackPassed());
         _eventManager.RegisterListener<GameOver>(evt => Debug.Log("GAME OVER LOSER"));
 
@@ -64,23 +63,12 @@ public class GameManager : MonoBehaviour
     private void StartTrack(GameStarted _)
     {
         _trackPlayer.Play(_currentLevel.Track);
-        _normalizedBeatTimes = _trackPlayer._currentTrack.GetNormalizedBeatTimes();
         _currentState = GameplayState.OnTrack;
     }
 
     private void Update()
     {
-        
-        if (_currentState == GameplayState.Transitioning)
-        {
-            if (!_splineAnimate.IsPlaying)
-            {
-
-                _currentState = GameplayState.OnTrack;
-            }
-        }
-        
-        if (_currentState != GameplayState.OnTrack)
+        if (_currentState is not (GameplayState.OnTrack or GameplayState.OnExitTrack))
         {
             return;
         }
@@ -92,7 +80,7 @@ public class GameManager : MonoBehaviour
         _playerShip.position = OrbitHelpers.OrbitPointFromNormalisedPosition(_currentLevel.World.Orbit,
             _progress / _currentLevel.Track.Duration);
 
-        _playerShip.rotation = OrbitHelpers.ForwardRotationFromNormalisePosition(_currentLevel.World.Orbit, 
+        _playerShip.rotation = OrbitHelpers.ForwardRotationFromNormalisePosition(_currentLevel.World.Orbit,
             _progress / _currentLevel.Track.Duration);
 
         if (_trackPlayer._currentTrack.State == PlayableTrack.States.Playing)
@@ -101,42 +89,41 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void OnDrawGizmos()
-    {
-        // if (_normalizedBeatTimes == null)
-        // {
-        //     return;
-        // }
-        //
-        // foreach (var (beat, normalizedTime) in _normalizedBeatTimes)
-        // {
-        //     Gizmos.color = beat.Action == BeatAction.Empty ? Color.red : Color.green;
-        //     Gizmos.DrawWireSphere(
-        //         OrbitHelpers.OrbitPointFromNormalisedPosition(_orbitManager.MainOrbit, normalizedTime), 20f);
-        // }
-    }
-
     private void TrackPassed()
     {
-        var pos1 = OrbitHelpers.OrbitPointFromNormalisedPosition(_currentLevel.World.Orbit, 0.75f);
-        var pos3 = OrbitHelpers.OrbitPointFromNormalisedPosition(_levels[1].World.Orbit, 0.5f);
-        var pos2 = new Vector3((pos1.x + pos3.x) / 2, 0, -2500f);
+        switch (_currentState)
+        {
+            case GameplayState.OnTrack:
+                _currentState = GameplayState.OnExitTrack;
+                _trackPlayer.Play(_currentLevel.ExitTrack);
+                _trackPlayer.Tick(_progress);
+                _eventManager.DispatchEvent(new LevelPassed(_currentLevel));
+                break;
+            case GameplayState.OnExitTrack:
+                var pos1 = OrbitHelpers.OrbitPointFromNormalisedPosition(_currentLevel.World.Orbit, 0.75f);
+                var pos3 = OrbitHelpers.OrbitPointFromNormalisedPosition(_levels[1].World.Orbit, 0.5f);
+                var pos2 = new Vector3((pos1.x + pos3.x) / 2, 0, -2500f);
 
-        var knot1 = new BezierKnot(pos1, pos1.x, pos1.x + 1000);
-        var knot3 = new BezierKnot(pos3, pos3.z, pos3.z + 750);
-        _spline.Add(knot1, TangentMode.Mirrored);
-        _spline.Add(pos2);
-        _spline.Add(knot3, TangentMode.Mirrored);
+                var knot1 = new BezierKnot(pos1, pos1.x, pos1.x + 1000);
+                var knot3 = new BezierKnot(pos3, pos3.z, pos3.z + 750);
+                _spline.Add(knot1, TangentMode.Mirrored);
+                _spline.Add(pos2);
+                _spline.Add(knot3, TangentMode.Mirrored);
         
 
-        _container.Spline = _spline;
-        _splineAnimate.Container = _container;
+                _container.Spline = _spline;
+                _splineAnimate.Container = _container;
         
-        _splineAnimate.Duration = 10f;
-        _splineAnimate.Loop = SplineAnimate.LoopMode.Once;
-        _splineAnimate.Play();
+                _splineAnimate.Duration = 10f;
+                _splineAnimate.Loop = SplineAnimate.LoopMode.Once;
+                _splineAnimate.Play();
         
-        _currentState = GameplayState.Transitioning;
+                _currentState = GameplayState.Transitioning;
+                _currentState = GameplayState.Transitioning;
+                break;
+            default:
+                return;
+        }
     }
 
     private void TrackFailed()
