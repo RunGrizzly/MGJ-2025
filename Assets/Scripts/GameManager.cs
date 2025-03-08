@@ -6,7 +6,7 @@ using SGS29.Utilities;
 using UnityEngine;
 
 // [ExecuteAlways]
-public class KyleMess : MonoBehaviour
+public class GameManager : MonoBehaviour
 {
     [SerializeField] private OrbitManager _orbitManager;
     [SerializeField] private TrackGenerator _trackGenerator;
@@ -14,6 +14,15 @@ public class KyleMess : MonoBehaviour
     private EventManager _eventManager;
     private Dictionary<Gameplay.Beat, float> _normalizedBeatTimes;
     private TrackDefinition _trackDefinition;
+    private GameplayState _currentState;
+
+    enum GameplayState
+    {
+        InHangar,
+        Transitioning,
+        OnTrack,
+        Dead
+    }
     
     public void OnEnable()
     {
@@ -22,8 +31,8 @@ public class KyleMess : MonoBehaviour
         _eventManager = SM.Instance<EventManager>();
         _eventManager.RegisterListener<TrackStarted>(evt => Debug.Log("Track started"));
         _eventManager.RegisterListener<GameStarted>(StartTrack);
-        _eventManager.RegisterListener<TrackFailed>(evt => Debug.Log("Track failed"));
-        _eventManager.RegisterListener<TrackPassed>(evt => Debug.Log("Track passed"));
+        _eventManager.RegisterListener<TrackFailed>(evt => TrackFailed());
+        _eventManager.RegisterListener<TrackPassed>(evt => TrackPassed());
         _eventManager.RegisterListener<GameOver>(evt => Debug.Log("GAME OVER LOSER"));
     }
 
@@ -46,5 +55,15 @@ public class KyleMess : MonoBehaviour
             Gizmos.DrawWireSphere(
                 _orbitManager.OrbitPointFromNormalisedPosition(_orbitManager.MainOrbit, normalizedTime), 20f);
         }
+    }
+
+    private void TrackPassed()
+    {
+        _currentState = GameplayState.Transitioning;
+    }
+    
+    private void TrackFailed()
+    {
+        _currentState = GameplayState.Dead;
     }
 }
