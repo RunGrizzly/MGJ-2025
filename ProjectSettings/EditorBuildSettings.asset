@@ -11,7 +11,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/KyleMess.unity
     guid: 9da76709995736e4d8f0482b1e6e1202
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Dynamic.unity
     guid: c08321ff48633eb4281aed8531b8b3c4
   m_configObjects:
