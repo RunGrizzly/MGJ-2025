@@ -1,6 +1,7 @@
 #nullable enable
 using System.Linq;
 using Events;
+using Gameplay.TrackEvents;
 using SGS29.Utilities;
 using UnityEngine;
 
@@ -27,6 +28,7 @@ namespace Gameplay
             _actions.Ship.Action2.performed += _ => OnAction(BeatAction.Action2);
             _actions.Ship.Action3.performed += _ => OnAction(BeatAction.Action3);
             _actions.Ship.Action4.performed += _ => OnAction(BeatAction.Action4);
+            _actions.Ship.Transfer.performed += _ => OnAction(BeatAction.Transfer);
 
             // _progress = 0;
             _isPlaying = true;
@@ -48,6 +50,11 @@ namespace Gameplay
                 case { State: Beat.States.InProgress } when action == _currentTrack.CurrentBeat.Action:
                     _currentTrack.CurrentBeat.SetState(Beat.States.Success);
                     Debug.Log("Hit the beat");
+                    break;
+                case { State: Beat.States.InProgress } when action == _currentTrack.CurrentBeat.Action && action == BeatAction.Transfer:
+                    _currentTrack.CurrentBeat.SetState(Beat.States.Success);
+                    _currentTrack.SetState(PlayableTrack.States.Passed);
+                    _eventManager.DispatchEvent(new TrackPassed(_currentTrack));
                     break;
                 case { State: Beat.States.InProgress }:
                     _currentTrack.CurrentBeat.SetState(Beat.States.Failed);
