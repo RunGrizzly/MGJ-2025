@@ -256,7 +256,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &974480492
 Transform:
   m_ObjectHideFlags: 0
@@ -285,7 +285,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _maxAttempts: 3
-  _currentAttempt: 0
+  _remainingAttempts: 3
 --- !u!4 &1940196011 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3569063638209003962, guid: 1dfb26995906e6a4fa14fe3e24b1da06, type: 3}
