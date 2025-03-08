@@ -28,6 +28,7 @@ public class GameManager : MonoBehaviour
         InHangar,
         Transitioning,
         OnTrack,
+        OnExitTrack,
         Dead
     }
 

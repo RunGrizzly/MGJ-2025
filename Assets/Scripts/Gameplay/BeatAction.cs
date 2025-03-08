@@ -7,5 +7,6 @@ namespace Gameplay
         Action2,
         Action3,
         Action4,
+        Transfer,
     }
 }

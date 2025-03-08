@@ -28,7 +28,7 @@ namespace Gameplay
             _actions.Ship.Action3.performed += _ => OnAction(BeatAction.Action3);
             _actions.Ship.Action4.performed += _ => OnAction(BeatAction.Action4);
 
-            _progress = 0;
+            // _progress = 0;
             _isPlaying = true;
             _currentTrack.SetState(PlayableTrack.States.Playing);
             _currentTrack.SetProgress(_progress);

@@ -1,7 +1,6 @@
 #nullable enable
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 
 namespace Gameplay
 {
@@ -14,7 +13,7 @@ namespace Gameplay
 
         private float _progress;
 
-        private PlayableTrack(List<Beat> beats, float duration)
+        public PlayableTrack(List<Beat> beats, float duration)
         {
             Beats = beats;
             Duration = duration;
