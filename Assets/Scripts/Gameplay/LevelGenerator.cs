@@ -1,4 +1,6 @@
 using System;
+using Events;
+using SGS29.Utilities;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -19,6 +21,7 @@ namespace Gameplay
             world.Init(worldRadius, worldPosition);
             var trackDefinition = _trackGenerator.Generate(4, 1f / number);
             var track = PlayableTrack.FromTrackDefinition(trackDefinition, 1f, 0.25f);
+            
             return new Level(world, track, number);
         }
 

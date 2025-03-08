@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class BeatPrompt : MonoBehaviour
 {
     //public Sprite PromptSprite = null;
-    public Beat Beat;
+    public Gameplay.Beat Beat;
     public Image PromptImage = null;
 
     private void Update()

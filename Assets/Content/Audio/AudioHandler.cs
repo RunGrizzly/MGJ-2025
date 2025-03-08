@@ -1,6 +1,10 @@
 using System;
 using System.Collections;
+using Events;
+using Gameplay;
+using Gameplay.TrackEvents;
 using RotaryHeart.Lib.SerializableDictionary;
+using SGS29.Utilities;
 using UnityEngine;
 
 [System.Serializable]
@@ -13,11 +17,16 @@ public class AudioHandler : MonoBehaviour
 {
   public StringAudioClipDictionary Soundscapes = new StringAudioClipDictionary();
 
+  public StringAudioClipDictionary Stings = new StringAudioClipDictionary();
+  
   [SerializeField]
   private AudioSource SoundscapeSourceA = null;
   
   [SerializeField]
   private AudioSource SoundscapeSourceB = null;
+
+  [SerializeField]
+  private AudioSource StingAudioSource = null;
   
   public string SoundscapeID = "";
 
@@ -32,16 +41,60 @@ public class AudioHandler : MonoBehaviour
   private Coroutine fadeIn = null;
   private Coroutine fadeOut = null;
   
-  private void OnEnable()
+   private void OnEnable()
   {
+    SM.Instance<EventManager>().RegisterListener<NewLevel>(OnNewLevel);
+    SM.Instance<EventManager>().RegisterListener<BeatAttemptEvent>(OnBeatAttempt);
+    
     SoundscapeSourceB.Pause();
     EvaluateSoundscape();   
   }
 
-  private void OnValidate()
+  private void OnDisable()
   {
-    // GameTempo = Mathf.Repeat(GameTempo + Time.deltaTime*SpeedFactor, 1);
-    EvaluateSoundscape();
+    SM.Instance<EventManager>().UnregisterListener<NewLevel>(OnNewLevel);
+    SM.Instance<EventManager>().UnregisterListener<BeatAttemptEvent>(OnBeatAttempt);
+  }
+
+  private void OnBeatAttempt(BeatAttemptEvent context)
+  {
+    switch (context.Beat.State)
+    {
+      case Beat.States.Failed:
+        case Beat.States.Missed:
+          PlaySting("stingbad");
+          break;
+        
+      case Beat.States.Success:
+          PlaySting("stinggood");
+          break;
+    }
+  }
+  
+  
+  private void OnNewLevel(NewLevel context)
+  {
+   
+  }
+  
+  
+
+  // private void OnValidate()
+  // {
+  //   // GameTempo = Mathf.Repeat(GameTempo + Time.deltaTime*SpeedFactor, 1);
+  //   EvaluateSoundscape();
+  // }
+
+  private void PlaySting(string stingID)
+  {
+    AudioClip newSting = null;
+
+    if (Stings.TryGetValue(stingID, out newSting))
+    {
+
+      StingAudioSource.PlayOneShot(newSting);
+
+    }
   }
 
   private void EvaluateSoundscape()
@@ -80,9 +133,6 @@ public class AudioHandler : MonoBehaviour
     AudioSource oldSource = SoundscapeSourceA.volume >= 0.9f ? SoundscapeSourceA : SoundscapeSourceB;
     AudioSource newSource = oldSource == SoundscapeSourceA? SoundscapeSourceB : SoundscapeSourceA;
     
-  
-    
-    
     if(Soundscapes.TryGetValue(soundScapeID,out newAudioClip))
     {
 
@@ -107,40 +157,9 @@ public class AudioHandler : MonoBehaviour
         }
         
         fadeOut = StartCoroutine(FadeAudioOut(oldSource, Crossfade.y));
-        //oldSource.clip = null;
-
-        // LeanTween.value(gameObject, 0f, 1f, Crossfade.x)
-        // .setOnUpdate((val) =>
-        // {
-        //   newSource.volume = val;
-        // })
-        // .setOnComplete(() =>
-        // {
-        //   newSource.volume = 1;
-        //   
-        //   LeanTween.value(gameObject, 1f, 0f, Crossfade.y)
-        //     .setOnUpdate((val) =>
-        //     {
-        //       oldSource.volume = val;
-        //     })
-        //     .setOnComplete(() =>
-        //     {
-        //       oldSource.Stop();
-        //       oldSource.clip = null;
-        //     });
-        // });
-
-
-      //}
     }
   }
-
-  private void FixedUpdate()
-  {
-    // GameTempo = Mathf.Repeat(GameTempo + Time.deltaTime*SpeedFactor, 1);
-    // EvaluateSoundscape();
-  }
-
+  
   private IEnumerator FadeAudioIn( AudioSource newSource, AudioSource oldSource,float duration)
   {
     newSource.volume = 0f;

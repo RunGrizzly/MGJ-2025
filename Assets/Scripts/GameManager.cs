@@ -43,8 +43,15 @@ public class GameManager : MonoBehaviour
         _eventManager.RegisterListener<TrackPassed>(evt => TrackPassed());
         _eventManager.RegisterListener<GameOver>(evt => Debug.Log("GAME OVER LOSER"));
 
+       
+    
+    }
+
+    public void Start()
+    {
         _levels = Enumerable.Range(0, 5).Select(_levelGenerator.Generate).ToList();
         _currentLevel = _levels.First();
+        SM.Instance<EventManager>().DispatchEvent(new NewLevel(_currentLevel));
     }
 
     private void StartTrack(GameStarted _)
@@ -64,6 +71,9 @@ public class GameManager : MonoBehaviour
         _progress += Time.deltaTime;
         _trackPlayer.Tick(_progress);
         _playerShip.position = OrbitHelpers.OrbitPointFromNormalisedPosition(_currentLevel.World.Orbit,
+            _progress / _currentLevel.Track.Duration);
+
+        _playerShip.rotation = OrbitHelpers.ForwardRotationFromNormalisePosition(_currentLevel.World.Orbit, 
             _progress / _currentLevel.Track.Duration);
 
         if (_trackPlayer._currentTrack.State == PlayableTrack.States.Playing)
