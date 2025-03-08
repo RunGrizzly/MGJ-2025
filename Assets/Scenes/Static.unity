@@ -195,8 +195,7 @@ MonoBehaviour:
   _trackGenerator: {fileID: 2123548213}
   _trackPlayer: {fileID: 1616786874}
   _levelGenerator: {fileID: 1938607272}
-  _shipPrefab: {fileID: 5116134188606206880, guid: 9523bfc1d2f25944592efa6f5bdd22cd,
-    type: 3}
+  _shipPrefab: {fileID: 5116134188606206880, guid: 9523bfc1d2f25944592efa6f5bdd22cd, type: 3}
   _spline:
     m_EditModeType: 1
     m_Knots: []
@@ -433,28 +432,17 @@ MonoBehaviour:
   m_MoveRepeatDelay: 0.5
   m_MoveRepeatRate: 0.1
   m_XRTrackingOrigin: {fileID: 0}
-  m_ActionsAsset: {fileID: -944628639613478452, guid: ca9f5fa95ffab41fb9a615ab714db018,
-    type: 3}
-  m_PointAction: {fileID: -1654692200621890270, guid: ca9f5fa95ffab41fb9a615ab714db018,
-    type: 3}
-  m_MoveAction: {fileID: -8784545083839296357, guid: ca9f5fa95ffab41fb9a615ab714db018,
-    type: 3}
-  m_SubmitAction: {fileID: 392368643174621059, guid: ca9f5fa95ffab41fb9a615ab714db018,
-    type: 3}
-  m_CancelAction: {fileID: 7727032971491509709, guid: ca9f5fa95ffab41fb9a615ab714db018,
-    type: 3}
-  m_LeftClickAction: {fileID: 3001919216989983466, guid: ca9f5fa95ffab41fb9a615ab714db018,
-    type: 3}
-  m_MiddleClickAction: {fileID: -2185481485913320682, guid: ca9f5fa95ffab41fb9a615ab714db018,
-    type: 3}
-  m_RightClickAction: {fileID: -4090225696740746782, guid: ca9f5fa95ffab41fb9a615ab714db018,
-    type: 3}
-  m_ScrollWheelAction: {fileID: 6240969308177333660, guid: ca9f5fa95ffab41fb9a615ab714db018,
-    type: 3}
-  m_TrackedDevicePositionAction: {fileID: 6564999863303420839, guid: ca9f5fa95ffab41fb9a615ab714db018,
-    type: 3}
-  m_TrackedDeviceOrientationAction: {fileID: 7970375526676320489, guid: ca9f5fa95ffab41fb9a615ab714db018,
-    type: 3}
+  m_ActionsAsset: {fileID: -944628639613478452, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_PointAction: {fileID: -1654692200621890270, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_MoveAction: {fileID: -8784545083839296357, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_SubmitAction: {fileID: 392368643174621059, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_CancelAction: {fileID: 7727032971491509709, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_LeftClickAction: {fileID: 3001919216989983466, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_MiddleClickAction: {fileID: -2185481485913320682, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_RightClickAction: {fileID: -4090225696740746782, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_ScrollWheelAction: {fileID: 6240969308177333660, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_TrackedDevicePositionAction: {fileID: 6564999863303420839, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_TrackedDeviceOrientationAction: {fileID: 7970375526676320489, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
   m_DeselectOnBackgroundClick: 1
   m_PointerBehavior: 0
   m_CursorLockBehavior: 0
@@ -1240,9 +1228,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   HUDCanvas: {fileID: 751705320}
-  BeatPromptTemplate: {fileID: 6712844121865795843, guid: edd358fbd4325a74a88461df786ad8ff,
-    type: 3}
-  BeatPrompts: []
+  BeatPromptTemplate: {fileID: 6712844121865795843, guid: edd358fbd4325a74a88461df786ad8ff, type: 3}
   ActionSprites:
     reorderableList:
       canAdd: 1
@@ -1269,14 +1255,12 @@ MonoBehaviour:
     isExpanded: 1
     _keyValues: 0100000002000000030000000400000005000000
     _keys: 0100000002000000030000000400000005000000
-    _values: [{fileID: 21300000, guid: 21d5838a29f490d4c84e52a275a25391, type: 3},
-      {fileID: 21300000, guid: cd949f1aa19f0fd48aec54f033521042, type: 3}, {fileID: 21300000,
-        guid: e49dc04d88c5a1e46803f2fdd963553e, type: 3}, {fileID: 21300000, guid: 0f4df063111a50140ab8dc8463b0b96e,
-        type: 3}, {fileID: 21300000, guid: 21d5838a29f490d4c84e52a275a25391, type: 3},
-      {fileID: 21300000, guid: 21d5838a29f490d4c84e52a275a25391, type: 3}, {fileID: 21300000,
-        guid: cd949f1aa19f0fd48aec54f033521042, type: 3}, {fileID: 21300000, guid: e49dc04d88c5a1e46803f2fdd963553e,
-        type: 3}, {fileID: 21300000, guid: 0f4df063111a50140ab8dc8463b0b96e, type: 3},
-      {fileID: 21300000, guid: 45e7981f83aa71a4886a526efb49095f, type: 3}]
+    _values:
+    - {fileID: 21300000, guid: 21d5838a29f490d4c84e52a275a25391, type: 3}
+    - {fileID: 21300000, guid: cd949f1aa19f0fd48aec54f033521042, type: 3}
+    - {fileID: 21300000, guid: e49dc04d88c5a1e46803f2fdd963553e, type: 3}
+    - {fileID: 21300000, guid: 0f4df063111a50140ab8dc8463b0b96e, type: 3}
+    - {fileID: 21300000, guid: 7d00f8d61d7291d48a2593ae0c8e1583, type: 3}
   AttemptSplashes:
     reorderableList:
       canAdd: 1
@@ -1367,8 +1351,7 @@ MonoBehaviour:
   m_text: On Track
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 3645c9073b64b0448a3f87f5081537fd, type: 2}
-  m_sharedMaterial: {fileID: 5012602158731179101, guid: 3645c9073b64b0448a3f87f5081537fd,
-    type: 2}
+  m_sharedMaterial: {fileID: 5012602158731179101, guid: 3645c9073b64b0448a3f87f5081537fd, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1504,8 +1487,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f98c04e05335410aa9b2b20f288de783, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _worldPrefab: {fileID: 4528948803247901497, guid: 1dfb26995906e6a4fa14fe3e24b1da06,
-    type: 3}
+  _worldPrefab: {fileID: 4528948803247901497, guid: 1dfb26995906e6a4fa14fe3e24b1da06, type: 3}
   _worldDistance: 10000
   _spawnAngle: 0
   _trackGenerator: {fileID: 2123548213}

@@ -19,7 +19,6 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Spline _spline;
     public SplineContainer _container;
     private EventManager _eventManager;
-    private Dictionary<Gameplay.Beat, float> _normalizedBeatTimes;
     private TrackDefinition _trackDefinition;
     private GameplayState _currentState;
     private List<Level> _levels;
@@ -49,9 +48,7 @@ public class GameManager : MonoBehaviour
         _eventManager.RegisterListener<GameOver>(evt => Debug.Log("GAME OVER LOSER"));
 
         _container = FindAnyObjectByType<SplineContainer>();
-        
         _splineAnimate = _playerShip.GetComponent<SplineAnimate>();
-
     }
 
     public void Start()
@@ -64,8 +61,14 @@ public class GameManager : MonoBehaviour
     private void StartTrack(GameStarted _)
     {
         _trackPlayer.Play(_currentLevel.Track);
-        _normalizedBeatTimes = _trackPlayer._currentTrack.GetNormalizedBeatTimes();
         _currentState = GameplayState.OnTrack;
+    }
+
+    private void StartNextLevel()
+    {
+        _currentLevel = _levels[_currentLevel.Number + 1];
+        StartTrack(null);
+        _splineAnimate.Completed -= StartNextLevel;
     }
 
     private void Update()
@@ -75,15 +78,12 @@ public class GameManager : MonoBehaviour
             return;
         }
 
- 
-
         _progress += Time.deltaTime;
         _trackPlayer.Tick(_progress);
         _playerShip.position = OrbitHelpers.OrbitPointFromNormalisedPosition(_currentLevel.World.Orbit,
             _progress / _currentLevel.Track.Duration);
 
-        
-        _playerShip.rotation = OrbitHelpers.ForwardRotationFromNormalisePosition(_currentLevel.World.Orbit, 
+        _playerShip.rotation = OrbitHelpers.ForwardRotationFromNormalisePosition(_currentLevel.World.Orbit,
             _progress / _currentLevel.Track.Duration);
 
         if (_trackPlayer._currentTrack.State == PlayableTrack.States.Playing)
@@ -112,15 +112,16 @@ public class GameManager : MonoBehaviour
                 _spline.Add(knot1, TangentMode.Mirrored);
                 _spline.Add(pos2);
                 _spline.Add(knot3, TangentMode.Mirrored);
-        
+
 
                 _container.Spline = _spline;
                 _splineAnimate.Container = _container;
-        
+
                 _splineAnimate.Duration = 10f;
                 _splineAnimate.Loop = SplineAnimate.LoopMode.Once;
                 _splineAnimate.Play();
-        
+                _splineAnimate.Completed += StartNextLevel;
+
                 _currentState = GameplayState.Transitioning;
                 break;
             default:
