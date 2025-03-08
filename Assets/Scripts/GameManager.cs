@@ -16,7 +16,6 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TrackPlayer _trackPlayer;
     [SerializeField] private LevelGenerator _levelGenerator;
     [SerializeField] private Transform _shipPrefab;
-    [SerializeField] private Spline _spline;
     public SplineContainer _container;
     private EventManager _eventManager;
     private TrackDefinition _trackDefinition;
@@ -65,14 +64,12 @@ public class GameManager : MonoBehaviour
 
     private void StartNextLevel()
     {
-        if (_currentLevel == null)
-        {
-            _currentLevel = _levels.First();
-        }
-        _currentLevel = _levels[_currentLevel.Number + 1];
+        _progress = 0f;
+        _currentLevel = _currentLevel == null ? _levels.First() : _levels[_currentLevel.Number + 1];
         SM.Instance<EventManager>().DispatchEvent(new NewLevel(_currentLevel));
         StartTrack(null);
         _splineAnimate.Completed -= StartNextLevel;
+        _splineAnimate?.Container?.RemoveSplineAt(0);
     }
 
     private void Update()
@@ -108,17 +105,19 @@ public class GameManager : MonoBehaviour
                 break;
             case GameplayState.OnExitTrack:
                 var pos1 = OrbitHelpers.OrbitPointFromNormalisedPosition(_currentLevel.World.Orbit, 0.75f);
-                var pos3 = OrbitHelpers.OrbitPointFromNormalisedPosition(_levels[1].World.Orbit, 0.5f);
+                var pos3 = OrbitHelpers.OrbitPointFromNormalisedPosition(_levels[_currentLevel.Number + 1].World.Orbit,
+                    0.5f);
                 var pos2 = new Vector3((pos1.x + pos3.x) / 2, 0, -2500f);
 
-                var knot1 = new BezierKnot(pos1, pos1.x, pos1.x + 1000);
-                var knot3 = new BezierKnot(pos3, pos3.z, pos3.z + 750);
-                _spline.Add(knot1, TangentMode.Mirrored);
-                _spline.Add(pos2);
-                _spline.Add(knot3, TangentMode.Mirrored);
+                var knot1 = new BezierKnot(pos1, 0f,  1000f);
+                var knot3 = new BezierKnot(pos3, 0f, 750f);
+                var spline = new Spline();
+                spline.Add(knot1, TangentMode.Mirrored);
+                spline.Add(pos2);
+                spline.Add(knot3, TangentMode.Mirrored);
 
 
-                _container.Spline = _spline;
+                _container.Spline = spline;
                 _splineAnimate.Container = _container;
 
                 _splineAnimate.Duration = 10f;
