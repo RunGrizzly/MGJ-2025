@@ -11,8 +11,6 @@ using UnityEngine;
 public class StringAudioClipDictionary : SerializableDictionaryBase<string, AudioClip>
 {
 }
-
-
 public class AudioHandler : MonoBehaviour
 {
   public StringAudioClipDictionary Soundscapes = new StringAudioClipDictionary();
