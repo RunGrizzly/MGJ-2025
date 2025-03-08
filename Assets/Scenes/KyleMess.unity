@@ -189,6 +189,7 @@ GameObject:
   - component: {fileID: 974480491}
   - component: {fileID: 974480490}
   - component: {fileID: 974480493}
+  - component: {fileID: 974480494}
   m_Layer: 0
   m_Name: TrackPlayer
   m_TagString: Untagged
@@ -215,7 +216,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 974480489}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f6722e3ccd1189b49a94a9be03017f94, type: 3}
   m_Name: 
@@ -223,6 +224,7 @@ MonoBehaviour:
   _orbitManager: {fileID: 441067189}
   _trackGenerator: {fileID: 974480490}
   _trackPlayer: {fileID: 974480493}
+  _eventManager: {fileID: 0}
 --- !u!4 &974480492
 Transform:
   m_ObjectHideFlags: 0
@@ -253,6 +255,20 @@ MonoBehaviour:
   _orbitManager: {fileID: 441067189}
   _reactionWindow: 0.25
   _rate: 1
+--- !u!114 &974480494
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 974480489}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 162171091cf81f74ebb4d8c2ec7bc8fa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MaxAttempts: 3
+  CurrentAttempt: 0
 --- !u!1 &1694864321
 GameObject:
   m_ObjectHideFlags: 0
@@ -394,7 +410,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 343665657559869166, guid: 1c278caa5e730a84cb4f62877e8323a1, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 4.194763
+      value: 4.191162
       objectReference: {fileID: 0}
     - target: {fileID: 343665657559869166, guid: 1c278caa5e730a84cb4f62877e8323a1, type: 3}
       propertyPath: m_LocalPosition.z

@@ -7,43 +7,42 @@ namespace Gameplay
 {
     public class PlayableTrack
     {
-        public List<Beat> Actions { get; private set; }
-        public Beat? CurrentAction { get; private set; }
+        public List<Beat> Beats { get; private set; }
+        public Beat? CurrentBeat { get; private set; }
         public float Duration { get; private set; }
         public States State { get; private set; }
 
         private float _progress;
 
-        private PlayableTrack(List<Beat> actions, float duration)
+        private PlayableTrack(List<Beat> beats, float duration)
         {
-            Actions = actions;
+            Beats = beats;
             Duration = duration;
         }
 
         public void SetProgress(float progress)
         {
             _progress = progress;
-            CurrentAction = GetCurrentAction();
+            CurrentBeat = GetCurrentBeat();
 
-            if (CurrentAction != null && CurrentAction.State == Beat.States.Upcoming)
+            if (CurrentBeat != null && CurrentBeat.State == Beat.States.Upcoming)
             {
-                CurrentAction.SetState(Beat.States.InProgress);
-                Debug.Log($"Beat Active: {CurrentAction.Action}");
+                CurrentBeat.SetState(Beat.States.InProgress);
+                // Debug.Log($"Beat Active: {CurrentBeat.Action}");
             }
         }
 
         public void Reset()
         {
-            _progress = 0f;
-            foreach (var beat in Actions)
+            foreach (var beat in Beats)
             {
                 beat.SetState(Beat.States.Upcoming);
             }
         }
 
-        private Beat? GetCurrentAction()
+        private Beat? GetCurrentBeat()
         {
-            return Actions.FirstOrDefault(action => _progress >= action.StartTime && _progress <= action.EndTime);
+            return Beats.FirstOrDefault(action => _progress >= action.StartTime && _progress <= action.EndTime);
         }
 
         public static PlayableTrack FromTrackDefinition(TrackDefinition trackDefinition, float rate, float timingWindow)
@@ -53,11 +52,12 @@ namespace Gameplay
                 action,
                 i * actionSpacing,
                 i * actionSpacing + timingWindow,
-                Beat.States.Upcoming
+                Beat.States.Upcoming,
+                i
             ));
             foreach (var beat in actions)
             {
-                Debug.Log($"Beat: {beat.Action} {beat.StartTime}-{beat.EndTime}");
+                // Debug.Log($"Beat: {beat.Action} {beat.StartTime}-{beat.EndTime}");
             }
 
             return new PlayableTrack(actions.ToList(), trackDefinition.Actions.Count * actionSpacing);
@@ -66,10 +66,10 @@ namespace Gameplay
         public Dictionary<Beat, float> GetNormalizedBeatTimes()
         {
             var normalizedBeatTimes = new Dictionary<Beat, float>();
-            foreach (var beat in Actions)
+            foreach (var beat in Beats)
             {
                 normalizedBeatTimes.Add(beat, beat.StartTime / Duration);
-                Debug.Log($"KYLEMESS: Beat times: {beat.StartTime / Duration}");
+                // Debug.Log($"KYLEMESS: Beat times: {beat.StartTime / Duration}");
             }
 
             return normalizedBeatTimes;

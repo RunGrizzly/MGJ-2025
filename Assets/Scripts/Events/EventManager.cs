@@ -7,9 +7,9 @@ namespace Events
 {
     public class EventManager : MonoSingleton<EventManager>
     {
-        private static readonly Dictionary<Type, List<object>> EventListeners = new();
+        private readonly Dictionary<Type, List<object>> EventListeners = new();
 
-        public static void RegisterListener<T>(Action<T> listener) where T: IEvent
+        public void RegisterListener<T>(Action<T> listener) where T: IEvent
         {
             var type = typeof(T);
 
@@ -26,7 +26,7 @@ namespace Events
             addAction.Invoke();
         }
 
-        public static void UnregisterListener<T>(Action<T> listener) where T: IEvent
+        public void UnregisterListener<T>(Action<T> listener) where T: IEvent
         {
             var type = typeof(T);
 
@@ -41,7 +41,7 @@ namespace Events
             removeAction.Invoke();
         }
 
-        public static void DispatchEvent<T>(T eventToDispatch) where T: IEvent
+        public void DispatchEvent<T>(T eventToDispatch) where T: IEvent
         {
             var eventType = eventToDispatch.GetType();
             var handlers = EventListeners.Where(kvp => kvp.Key.IsAssignableFrom(eventType));

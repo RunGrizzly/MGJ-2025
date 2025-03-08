@@ -1,5 +1,7 @@
+using System.Linq;
+using Events;
+using SGS29.Utilities;
 using UnityEngine;
-using UnityEngine.Polybrush;
 
 namespace Gameplay
 {
@@ -8,11 +10,12 @@ namespace Gameplay
         [SerializeField] private OrbitManager _orbitManager;
         [SerializeField] private float _reactionWindow;
         [SerializeField] private float _rate;
-        private InputSystem_Actions _actions;
         public PlayableTrack _currentTrack { get; private set; }
+        private InputSystem_Actions _actions;
         private bool _isPlaying;
         private float _progress;
         private bool _isInSegment;
+        private EventManager _eventManager;
 
         public void Play(TrackDefinition trackDefinition)
         {
@@ -26,20 +29,28 @@ namespace Gameplay
 
             _progress = 0;
             _isPlaying = true;
+            _currentTrack.SetState(PlayableTrack.States.Playing);
+            _eventManager = SM.Instance<EventManager>();
+            _eventManager.DispatchEvent(new TrackEvents.TrackStarted(_currentTrack));
         }
 
         private void OnAction(BeatAction action)
         {
-            if (_currentTrack.CurrentAction != null)
+            if (_currentTrack.State != PlayableTrack.States.Playing)
             {
-                if (action == _currentTrack.CurrentAction.Action)
+                return;
+            }
+
+            if (_currentTrack.CurrentBeat != null)
+            {
+                if (action == _currentTrack.CurrentBeat.Action)
                 {
-                    _currentTrack.CurrentAction.SetState(Beat.States.Success);
+                    _currentTrack.CurrentBeat.SetState(Beat.States.Success);
                     Debug.Log("HIT THE BEAT");
                 }
                 else
                 {
-                    _currentTrack.CurrentAction.SetState(Beat.States.Failed);
+                    _currentTrack.CurrentBeat.SetState(Beat.States.Failed);
                     Debug.Log("FUCKED THE BEAT");
                 }
             }
@@ -47,6 +58,24 @@ namespace Gameplay
             {
                 _currentTrack.SetState(PlayableTrack.States.Failed);
                 Debug.Log("FUCKED THE BEAT 2");
+            }
+
+            UpdateTrackState();
+        }
+
+        private void UpdateTrackState()
+        {
+            if (_currentTrack.State != PlayableTrack.States.Playing)
+            {
+                return;
+            }
+
+            var beatsNotHit = _currentTrack.Beats.Where(beat =>
+                beat.Action != BeatAction.Empty && beat.State != Beat.States.Success);
+            if (!beatsNotHit.Any())
+            {
+                _currentTrack.SetState(PlayableTrack.States.Passed);
+                _eventManager.DispatchEvent(new TrackEvents.TrackPassed(_currentTrack));
             }
         }
 
@@ -60,28 +89,69 @@ namespace Gameplay
             _progress += Time.deltaTime;
             _orbitManager.m_normalisedPosition = _progress / _currentTrack.Duration;
 
-            var previousSegment = _currentTrack.CurrentAction;
+            var previousSegment = _currentTrack.CurrentBeat;
             _currentTrack.SetProgress(_progress);
-            var currentSegment = _currentTrack.CurrentAction;
+            var currentSegment = _currentTrack.CurrentBeat;
 
-            if (previousSegment != null && currentSegment != previousSegment &&
-                previousSegment.State != Beat.States.Success)
+            if (previousSegment != null
+                && currentSegment != previousSegment
+                && previousSegment.Action != BeatAction.Empty
+                && previousSegment.State != Beat.States.Success)
             {
                 previousSegment.SetState(Beat.States.Missed);
-                Debug.Log("MISSED THE BEAT");
+                // Debug.Log("MISSED THE BEAT");
             }
+
+            UpdateTrackState();
 
             if (_progress >= _currentTrack.Duration)
             {
                 if (_currentTrack.State == PlayableTrack.States.Passed)
                 {
-                    Debug.Log("PASSED TRACK");
+                    // Debug.Log("PASSED TRACK");
+                    // var trackEvent = new TrackEvents.TrackPassed(_currentTrack);
+                    // _eventManager.DispatchEvent(trackEvent);
                 }
                 else
                 {
                     _progress = Mathf.Repeat(_progress, _currentTrack.Duration);
                     _currentTrack.Reset();
+                    var trackEvent = new TrackEvents.TrackFailed(_currentTrack);
+                    _eventManager.DispatchEvent(trackEvent);
                 }
+            }
+        }
+    }
+
+    namespace TrackEvents
+    {
+        public class TrackStarted : IEvent
+        {
+            public PlayableTrack Track { get; }
+
+            public TrackStarted(PlayableTrack track)
+            {
+                Track = track;
+            }
+        }
+
+        public class TrackPassed : IEvent
+        {
+            public PlayableTrack Track { get; }
+
+            public TrackPassed(PlayableTrack track)
+            {
+                Track = track;
+            }
+        }
+
+        public class TrackFailed : IEvent
+        {
+            public PlayableTrack Track { get; }
+
+            public TrackFailed(PlayableTrack track)
+            {
+                Track = track;
             }
         }
     }
