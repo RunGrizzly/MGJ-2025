@@ -15,9 +15,9 @@ public class BeatActionSpriteDictionary : SerializableDictionaryBase<BeatAction,
 public class UIHandler : MonoBehaviour
 {
     public BeatPrompt BeatPromptTemplate;
-    public List<BeatPrompt> BeatPrompts = new List<BeatPrompt>();
-
     public BeatActionSpriteDictionary ActionSprites = new BeatActionSpriteDictionary();
+
+    private List<BeatPrompt> BeatPrompts = new List<BeatPrompt>();
 
     private void OnEnable()
     {

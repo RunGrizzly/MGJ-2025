@@ -17,6 +17,12 @@ namespace Gameplay
             _eventManager = SM.Instance<EventManager>();
             _eventManager.RegisterListener<TrackEvents.TrackStarted>(OnTrackStarted);
             _eventManager.RegisterListener<TrackEvents.TrackFailed>(OnTrackFailed);
+            _eventManager.RegisterListener<LevelPassed>(OnLevelPassed);
+        }
+
+        private void OnLevelPassed(LevelPassed obj)
+        {
+            _eventManager.UnregisterListener<TrackEvents.TrackFailed>(OnTrackFailed);
         }
 
         private void OnTrackStarted(TrackEvents.TrackStarted evt)

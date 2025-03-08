@@ -119,7 +119,6 @@ public class GameManager : MonoBehaviour
                 _splineAnimate.Play();
         
                 _currentState = GameplayState.Transitioning;
-                _currentState = GameplayState.Transitioning;
                 break;
             default:
                 return;
