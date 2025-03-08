@@ -118,7 +118,6 @@ GameObject:
   m_Component:
   - component: {fileID: 7732121675965879695}
   - component: {fileID: 1701231441662295196}
-  - component: {fileID: 741245236148499830}
   - component: {fileID: 4044412422970744175}
   m_Layer: 0
   m_Name: PlayerShip
@@ -152,24 +151,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1491925607434296922}
   m_Mesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &741245236148499830
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1491925607434296922}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 117fa2bd07f21374aae825a15c551c84, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_sourceBody: {fileID: 0}
-  m_radiusFactor: 0.76
-  m_axis: {x: 0, y: 1, z: 0}
-  m_rotateSpeed: 0.1
-  m_normalisedPosition: 0.3260498
-  m_manualPosition: 0
 --- !u!114 &4044412422970744175
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -430,7 +411,7 @@ Transform:
   m_GameObject: {fileID: 8484921082141308020}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.0792007, y: 0, z: -3.3000011}
+  m_LocalPosition: {x: 4.19115, y: 0, z: -3.299999}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

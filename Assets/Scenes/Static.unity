@@ -192,10 +192,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6722e3ccd1189b49a94a9be03017f94, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _orbitManager: {fileID: 0}
   _trackGenerator: {fileID: 2123548213}
   _trackPlayer: {fileID: 1616786874}
   _levelGenerator: {fileID: 1938607272}
+  _shipPrefab: {fileID: 5116134188606206880, guid: 9523bfc1d2f25944592efa6f5bdd22cd, type: 3}
 --- !u!4 &269610145
 Transform:
   m_ObjectHideFlags: 0
@@ -487,7 +487,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40cba81db7904c91b5c27bbc85bfbb9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _orbitManager: {fileID: 0}
   _reactionWindow: 0.25
   _rate: 1
 --- !u!4 &1616786875

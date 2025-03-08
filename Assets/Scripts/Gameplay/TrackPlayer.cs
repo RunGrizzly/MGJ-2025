@@ -7,7 +7,6 @@ namespace Gameplay
 {
     public class TrackPlayer : MonoBehaviour
     {
-        [SerializeField] private OrbitManager _orbitManager;
         [SerializeField] private float _reactionWindow;
         [SerializeField] private float _rate;
         public PlayableTrack _currentTrack { get; private set; }
@@ -17,11 +16,12 @@ namespace Gameplay
         private bool _isInSegment;
         private EventManager _eventManager;
 
-        public void Play(TrackDefinition trackDefinition)
+        public void Play(PlayableTrack track)
         {
             _actions = new InputSystem_Actions();
             _actions.Ship.Enable();
-            _currentTrack = PlayableTrack.FromTrackDefinition(trackDefinition, _rate, _reactionWindow);
+            _currentTrack = track;
+            // _currentTrack = PlayableTrack.FromTrackDefinition(trackDefinition, _rate, _reactionWindow);
             _actions.Ship.Action1.performed += _ => OnAction(BeatAction.Action1);
             _actions.Ship.Action2.performed += _ => OnAction(BeatAction.Action2);
             _actions.Ship.Action3.performed += _ => OnAction(BeatAction.Action3);
@@ -79,16 +79,9 @@ namespace Gameplay
             }
         }
 
-        private void Update()
+        public void Tick(float progress)
         {
-            if (!_isPlaying)
-            {
-                return;
-            }
-
-            _progress += Time.deltaTime;
-            _orbitManager.m_normalisedPosition = _progress / _currentTrack.Duration;
-
+            _progress = progress;
             var previousSegment = _currentTrack.CurrentBeat;
             _currentTrack.SetProgress(_progress);
             var currentSegment = _currentTrack.CurrentBeat;
@@ -114,7 +107,6 @@ namespace Gameplay
                 }
                 else
                 {
-                    _progress = Mathf.Repeat(_progress, _currentTrack.Duration);
                     _currentTrack.Reset();
                     var trackEvent = new TrackEvents.TrackFailed(_currentTrack);
                     _eventManager.DispatchEvent(trackEvent);
