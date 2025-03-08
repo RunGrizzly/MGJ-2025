@@ -6,7 +6,15 @@ public class SceneLoader : MonoBehaviour
 {
     private void Awake()
     {
+        SceneManager.sceneLoaded += OnSceneLoaded; 
         SceneManager.LoadSceneAsync(1, LoadSceneMode.Additive);
-        // SceneManager.LoadSceneAsync(2, LoadSceneMode.Additive);
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (scene.buildIndex == 1)
+        {
+            SceneManager.SetActiveScene(scene);
+        }
     }
 }
