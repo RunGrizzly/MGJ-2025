@@ -176,7 +176,7 @@ public class GameManager : MonoBehaviour
                 _container.Spline = spline;
                 _splineAnimate.Container = _container;
 
-                _splineAnimate.Duration = 10f;
+                _splineAnimate.Duration = 7.5f;
                 _splineAnimate.Loop = SplineAnimate.LoopMode.Once;
                 _splineAnimate.ElapsedTime = 0f;
                 _splineAnimate.Play();
