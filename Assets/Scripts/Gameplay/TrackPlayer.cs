@@ -78,7 +78,7 @@ namespace Gameplay
             if (!beatsNotHit.Any())
             {
                 _currentTrack.SetState(PlayableTrack.States.Passed);
-                _actions.Ship.Disable();
+                // _actions.Ship.Disable();
                 _eventManager.DispatchEvent(new TrackPassed(_currentTrack));
             }
         }

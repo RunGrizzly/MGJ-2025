@@ -15,28 +15,27 @@ namespace Gameplay
         public void OnEnable()
         {
             _eventManager = SM.Instance<EventManager>();
-            _eventManager.RegisterListener<TrackEvents.TrackStarted>(OnTrackStarted);
-            _eventManager.RegisterListener<TrackEvents.TrackFailed>(OnTrackFailed);
+            _eventManager.RegisterListener<NewLevel>(OnTrackStarted);
             _eventManager.RegisterListener<LevelPassed>(OnLevelPassed);
         }
 
         private void OnLevelPassed(LevelPassed obj)
         {
-            _eventManager.UnregisterListener<TrackEvents.TrackFailed>(OnTrackFailed);
+            _eventManager.UnregisterListener<TrackEvents.TrackFailed>(OnNewLevel);
         }
 
-        private void OnTrackStarted(TrackEvents.TrackStarted evt)
+        private void OnTrackStarted(NewLevel evt)
         {
-            _playableTrack = evt.Track;
+            _playableTrack = evt.Level.Track;
             _remainingAttempts = _maxAttempts;
+            _eventManager.RegisterListener<TrackEvents.TrackFailed>(OnNewLevel);
         }
 
-        private void OnTrackFailed(TrackEvents.TrackFailed evt)
+        private void OnNewLevel(TrackEvents.TrackFailed evt)
         {
             _remainingAttempts--;
             Debug.Log($"Attempt failed, Remaining attempts: {_remainingAttempts}");
             _playableTrack.Reset();
-            
             
             if (_remainingAttempts == 0)
             {
