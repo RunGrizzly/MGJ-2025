@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c07ce73576ab436680a0b3c16dc7d8ee, type: 3}
   m_Name: DifficultySettings
   m_EditorClassIdentifier: 
-  BeatRate: 0.75
-  BeatTimingWindow: 0.4
+  BeatRate: 1.25
+  BeatTimingWindow: 0.2
