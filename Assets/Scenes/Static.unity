@@ -1507,7 +1507,7 @@ MonoBehaviour:
   HUDCanvas: {fileID: 751705322}
   GameOverSplash: {fileID: 9210527948593816655, guid: be394e289ee0f9644b48f8b0b63fb17c, type: 3}
   TransitionSplash: {fileID: 9210527948593816655, guid: e56f368ca42d63140987bb46d56ce8e3, type: 3}
-  m_transitionSplash: {fileID: 0}
+  MainMenuSplash: {fileID: 9210527948593816655, guid: fe886e262c91fc84a85ee687510621b1, type: 3}
   BeatPromptTemplate: {fileID: 6712844121865795843, guid: edd358fbd4325a74a88461df786ad8ff, type: 3}
   BeatPrompts: []
   ActionSprites:
@@ -1707,7 +1707,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 51.55
+  m_fontSize: 51.4
   m_fontSizeBase: 116
   m_fontWeight: 400
   m_enableAutoSizing: 1

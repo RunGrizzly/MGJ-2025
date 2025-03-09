@@ -34,6 +34,8 @@ public class GameStateManager : MonoSingleton<GameStateManager>
         _actions.Ship.Transfer.performed += OnAction;
         
         currentState = GameState.MainMenu;
+        
+        SM.Instance<EventManager>().DispatchEvent(new MainMenu());
     }
     
     private void ChangeState()

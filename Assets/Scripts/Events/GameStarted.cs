@@ -1,5 +1,9 @@
 ﻿namespace Events
 {
+    public class MainMenu : IEvent
+    {
+    }
+    
     public class GameStarted : IEvent
     {
     }

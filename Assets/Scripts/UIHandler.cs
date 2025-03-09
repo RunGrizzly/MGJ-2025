@@ -25,8 +25,12 @@ public class UIHandler : MonoBehaviour
 {
   public CanvasGroup HUDCanvas = null;
   public CanvasGroup GameOverSplash = null;
+  
   public CanvasGroup TransitionSplash = null;
-  public CanvasGroup m_transitionSplash = null;
+  private CanvasGroup m_transitionSplash = null;
+
+  public CanvasGroup MainMenuSplash = null;
+  private CanvasGroup m_mainMenuSplash = null;
   
   public BeatPrompt BeatPromptTemplate;
   public List<BeatPrompt> BeatPrompts = new List<BeatPrompt>();
@@ -57,6 +61,8 @@ public class UIHandler : MonoBehaviour
     SM.Instance<EventManager>().RegisterListener<TrackResetEvent>(OnTrackReset);
     
     SM.Instance<EventManager>().RegisterListener<GameManager.TransitionStarted>(OnTransitionStarted);
+    
+    SM.Instance<EventManager>().RegisterListener<MainMenu>(OnMainMenu);
   }
 
   private void OnDisable()
@@ -76,6 +82,20 @@ public class UIHandler : MonoBehaviour
     SM.Instance<EventManager>().UnregisterListener<TrackResetEvent>(OnTrackReset);
     
     SM.Instance<EventManager>().UnregisterListener<GameManager.TransitionStarted>(OnTransitionStarted);
+    
+    SM.Instance<EventManager>().RegisterListener<MainMenu>(OnMainMenu);
+  }
+
+  private void OnMainMenu(MainMenu context)
+  {
+    if (m_mainMenuSplash == null)
+    { 
+      m_mainMenuSplash = Instantiate(MainMenuSplash, HUDCanvas.transform);
+      m_mainMenuSplash.GetComponent<Animator>().SetTrigger("Blink");
+    }
+    
+    HUDCanvas.alpha = 0;
+    
   }
 
   private void OnTransitionStarted(GameManager.TransitionStarted context)
@@ -131,6 +151,11 @@ public class UIHandler : MonoBehaviour
         {
           Destroy(m_transitionSplash.gameObject);
         });
+    }
+    
+    if (m_mainMenuSplash != null)
+    { 
+      Destroy(m_mainMenuSplash.gameObject);
     }
   }
 
