@@ -23,8 +23,10 @@ public class BeatStateGameObjectDictionary : SerializableDictionaryBase<Beat.Sta
 
 public class UIHandler : MonoBehaviour
 {
-  public Canvas HUDCanvas = null;
+  public CanvasGroup HUDCanvas = null;
   public CanvasGroup GameOverSplash = null;
+  public CanvasGroup TransitionSplash = null;
+  public CanvasGroup m_transitionSplash = null;
   
   public BeatPrompt BeatPromptTemplate;
   public List<BeatPrompt> BeatPrompts = new List<BeatPrompt>();
@@ -53,6 +55,8 @@ public class UIHandler : MonoBehaviour
     SM.Instance<EventManager>().RegisterListener<TrackFailed>(OnTrackFailed);
     
     SM.Instance<EventManager>().RegisterListener<TrackResetEvent>(OnTrackReset);
+    
+    SM.Instance<EventManager>().RegisterListener<GameManager.TransitionStarted>(OnTransitionStarted);
   }
 
   private void OnDisable()
@@ -70,6 +74,26 @@ public class UIHandler : MonoBehaviour
     SM.Instance<EventManager>().UnregisterListener<TrackFailed>(OnTrackFailed);
     
     SM.Instance<EventManager>().UnregisterListener<TrackResetEvent>(OnTrackReset);
+    
+    SM.Instance<EventManager>().UnregisterListener<GameManager.TransitionStarted>(OnTransitionStarted);
+  }
+
+  private void OnTransitionStarted(GameManager.TransitionStarted context)
+  {
+    LeanTween.value(HUDCanvas.gameObject, 1, 0, 0.65f).setEase(LeanTweenType.easeInExpo)
+      .setOnUpdate((val) =>
+      {
+        HUDCanvas.alpha = val;
+      })
+      .setOnComplete(() =>
+      {
+        HUDCanvas.alpha = 0;
+      });
+
+    if (m_transitionSplash == null)
+    { 
+      m_transitionSplash = Instantiate(TransitionSplash, HUDCanvas.transform);
+    }
   }
   
   private void OnTrackStarted(TrackStarted context)
@@ -83,6 +107,29 @@ public class UIHandler : MonoBehaviour
       }
       
       AttemptPips[i].gameObject.SetActive(false);
+    }
+    
+    LeanTween.value(HUDCanvas.gameObject, HUDCanvas.alpha, 1, 0.65f).setEase(LeanTweenType.easeInExpo)
+      .setOnUpdate((val) =>
+      {
+        HUDCanvas.alpha = val;
+      })
+      .setOnComplete(() =>
+      {
+        HUDCanvas.alpha = 1;
+      });
+
+    if (m_transitionSplash != null)
+    {
+      LeanTween.value(HUDCanvas.gameObject, m_transitionSplash.alpha, 0, 0.65f).setEase(LeanTweenType.easeInExpo)
+        .setOnUpdate((val) =>
+        {
+          m_transitionSplash.alpha = val;
+        })
+        .setOnComplete(() =>
+        {
+          Destroy(m_transitionSplash.gameObject);
+        });
     }
   }
 
