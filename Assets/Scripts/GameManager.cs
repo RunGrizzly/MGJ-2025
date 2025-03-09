@@ -124,7 +124,7 @@ public class GameManager : MonoBehaviour
         SM.Instance<EventManager>().DispatchEvent(new NewLevel(_currentLevel));
         _trackPlayer.Play(_currentLevel.Track);
         _currentState = GameplayState.OnTrack;
-        _splineAnimate.Completed -= StartNextLevel;
+        _splineAnimate.Completed -= OnTransitionEnded;
         _splineAnimate?.Container?.KnotLinkCollection.Clear();
     }
 
@@ -180,7 +180,7 @@ public class GameManager : MonoBehaviour
                 _splineAnimate.Loop = SplineAnimate.LoopMode.Once;
                 _splineAnimate.ElapsedTime = 0f;
                 _splineAnimate.Play();
-                _splineAnimate.Completed += StartNextLevel;
+                _splineAnimate.Completed += OnTransitionEnded;
 
                 _currentState = GameplayState.Transitioning;
 
@@ -192,12 +192,25 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private void OnTransitionEnded()
+    {
+        StartNextLevel();
+        _trackPlayer._currentTrack.SetState(PlayableTrack.States.NotPlaying);
+        _progress = 0.5f * _trackPlayer._currentTrack.Duration;
+        Update();
+        SM.Instance<EventManager>().DispatchEvent(new TransitionEnded());
+    }
+
     private void TrackFailed()
     {
         _currentState = GameplayState.Dead;
     }
 
     public class TransitionStarted : IEvent
+    {
+    }
+
+    public class TransitionEnded : IEvent
     {
     }
 }

@@ -5,6 +5,6 @@ namespace Gameplay
 {
     public class TrackDefinition
     {
-        public List<BeatAction> Actions { get; } = new();
+        public List<BeatAction> Actions { get; set; } = new();
     }
 }

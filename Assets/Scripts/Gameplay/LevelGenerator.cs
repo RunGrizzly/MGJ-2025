@@ -1,6 +1,5 @@
 using System;
-using Events;
-using SGS29.Utilities;
+using Settings;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -12,6 +11,7 @@ namespace Gameplay
         [SerializeField] private float _worldDistance;
         [SerializeField] private float _spawnAngle;
         [SerializeField] private TrackGenerator _trackGenerator;
+        [SerializeField] private DifficultySettings _difficultySettings;
 
         public Level Generate(int number)
         {
@@ -20,8 +20,11 @@ namespace Gameplay
             var worldRadius = Random.Range(500f, 600f);
             world.Init(worldRadius, worldPosition);
             var trackDefinition = _trackGenerator.Generate(4, 0f);
-            var track = PlayableTrack.FromTrackDefinition(trackDefinition, 0.75f, 0.65f);
-            
+            var track = PlayableTrack.FromTrackDefinition(
+                trackDefinition,
+                _difficultySettings.BeatRate * (1f + (1f + number) * 0.1f),
+                _difficultySettings.BeatTimingWindow);
+
             return new Level(world, track, number);
         }
 

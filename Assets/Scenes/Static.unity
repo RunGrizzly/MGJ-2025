@@ -1976,6 +1976,7 @@ MonoBehaviour:
   _worldDistance: 10000
   _spawnAngle: 0
   _trackGenerator: {fileID: 2123548213}
+  _difficultySettings: {fileID: 11400000, guid: 73646f8be1cdc2c43b177c7d3d0a724f, type: 2}
 --- !u!4 &1938607273
 Transform:
   m_ObjectHideFlags: 0
