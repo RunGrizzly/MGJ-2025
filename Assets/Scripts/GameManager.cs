@@ -69,7 +69,7 @@ public class GameManager : MonoBehaviour
         SM.Instance<EventManager>().DispatchEvent(new NewLevel(_currentLevel));
         StartTrack(null);
         _splineAnimate.Completed -= StartNextLevel;
-        _splineAnimate?.Container?.RemoveSplineAt(0);
+        _splineAnimate?.Container?.KnotLinkCollection.Clear();
     }
 
     private void Update()
@@ -122,6 +122,7 @@ public class GameManager : MonoBehaviour
 
                 _splineAnimate.Duration = 10f;
                 _splineAnimate.Loop = SplineAnimate.LoopMode.Once;
+                _splineAnimate.ElapsedTime = 0f;
                 _splineAnimate.Play();
                 _splineAnimate.Completed += StartNextLevel;
 
