@@ -13,29 +13,28 @@ namespace Gameplay
         [SerializeField] private float _rate;
         public PlayableTrack _currentTrack { get; private set; }
         private InputSystem_Actions _actions;
-        private bool _isPlaying;
         private float _progress;
         private bool _isInSegment;
         private EventManager _eventManager;
 
-        public void Play(PlayableTrack track)
+        private void OnEnable()
         {
             _actions = new InputSystem_Actions();
-            _actions.Ship.Enable();
-            _currentTrack = track;
-            // _currentTrack = PlayableTrack.FromTrackDefinition(trackDefinition, _rate, _reactionWindow);
             _actions.Ship.Action1.performed += _ => OnAction(BeatAction.Action1);
             _actions.Ship.Action2.performed += _ => OnAction(BeatAction.Action2);
             _actions.Ship.Action3.performed += _ => OnAction(BeatAction.Action3);
             _actions.Ship.Action4.performed += _ => OnAction(BeatAction.Action4);
             _actions.Ship.Transfer.performed += _ => OnAction(BeatAction.Transfer);
+        }
 
-            // _progress = 0;
-            _isPlaying = true;
+        public void Play(PlayableTrack track)
+        {
+            _actions.Ship.Enable();
+            _currentTrack = track;
             _currentTrack.SetState(PlayableTrack.States.Playing);
             _currentTrack.SetProgress(_progress);
             _eventManager = SM.Instance<EventManager>();
-            _eventManager.DispatchEvent(new TrackEvents.TrackStarted(_currentTrack));
+            _eventManager.DispatchEvent(new TrackStarted(_currentTrack));
         }
 
         private void OnAction(BeatAction action)
@@ -50,11 +49,6 @@ namespace Gameplay
                 case { State: Beat.States.InProgress } when action == _currentTrack.CurrentBeat.Action:
                     _currentTrack.CurrentBeat.SetState(Beat.States.Success);
                     Debug.Log("Hit the beat");
-                    break;
-                case { State: Beat.States.InProgress } when action == _currentTrack.CurrentBeat.Action && action == BeatAction.Transfer:
-                    _currentTrack.CurrentBeat.SetState(Beat.States.Success);
-                    _currentTrack.SetState(PlayableTrack.States.Passed);
-                    _eventManager.DispatchEvent(new TrackPassed(_currentTrack));
                     break;
                 case { State: Beat.States.InProgress }:
                     _currentTrack.CurrentBeat.SetState(Beat.States.Failed);
@@ -81,7 +75,8 @@ namespace Gameplay
             if (!beatsNotHit.Any())
             {
                 _currentTrack.SetState(PlayableTrack.States.Passed);
-                _eventManager.DispatchEvent(new TrackEvents.TrackPassed(_currentTrack));
+                _actions.Ship.Disable();
+                _eventManager.DispatchEvent(new TrackPassed(_currentTrack));
             }
         }
 
@@ -111,7 +106,7 @@ namespace Gameplay
                 else
                 {
                     _currentTrack.Reset();
-                    var trackEvent = new TrackEvents.TrackFailed(_currentTrack);
+                    var trackEvent = new TrackFailed(_currentTrack);
                     _eventManager.DispatchEvent(trackEvent);
                 }
             }
