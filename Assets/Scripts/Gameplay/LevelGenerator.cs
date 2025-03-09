@@ -22,7 +22,7 @@ namespace Gameplay
             var trackDefinition = _trackGenerator.Generate(4, 0f);
             var track = PlayableTrack.FromTrackDefinition(
                 trackDefinition,
-                _difficultySettings.BeatRate,
+                _difficultySettings.BeatRate * (1f + (1f + number) * 0.1f),
                 _difficultySettings.BeatTimingWindow);
 
             return new Level(world, track, number);
