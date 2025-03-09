@@ -10,10 +10,13 @@ public class BeatPrompt : MonoBehaviour
     public Gameplay.Beat Beat;
      public Image PromptImageA = null;
      public Image PromptImageB = null;
+
+     public CanvasGroup CanvasGroup = null;
      
     private void Update()
     {
         transform.rotation = Quaternion.LookRotation(transform.position - Camera.main.transform.position, Vector3.up);
+        Debug.LogFormat(gameObject,$"CanvasGroup alpha is {CanvasGroup.alpha}");
     }
 
     public void FormatPrompt(bool enableA, bool enableB)

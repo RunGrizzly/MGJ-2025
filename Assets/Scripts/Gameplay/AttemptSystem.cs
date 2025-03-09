@@ -35,7 +35,7 @@ namespace Gameplay
         {
             _remainingAttempts--;
             Debug.Log($"Attempt failed, Remaining attempts: {_remainingAttempts}");
-            _playableTrack.Reset();
+            //_playableTrack.Reset();
             
             if (_remainingAttempts == 0)
             {

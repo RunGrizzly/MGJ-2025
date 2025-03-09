@@ -24,6 +24,7 @@ public class BeatStateGameObjectDictionary : SerializableDictionaryBase<Beat.Sta
 public class UIHandler : MonoBehaviour
 {
   public Canvas HUDCanvas = null;
+  public CanvasGroup GameOverSplash = null;
   
   public BeatPrompt BeatPromptTemplate;
   public List<BeatPrompt> BeatPrompts = new List<BeatPrompt>();
@@ -40,25 +41,38 @@ public class UIHandler : MonoBehaviour
   private void OnEnable()
   {
     SM.Instance<EventManager>().RegisterListener<NewLevel>(OnNewLevel);
+    
     SM.Instance<EventManager>().RegisterListener<BeatAttemptEvent>(OnBeatAttempt);
     
     SM.Instance<EventManager>().RegisterListener<LevelPassed>(OnLevelPassed);
     
-    SM.Instance<EventManager>().RegisterListener<TrackFailed>(OnTrackStarted);
+    SM.Instance<EventManager>().RegisterListener<GameOver>(OnGameOver);
+    
+    SM.Instance<EventManager>().RegisterListener<TrackStarted>(OnTrackStarted);
+    
     SM.Instance<EventManager>().RegisterListener<TrackFailed>(OnTrackFailed);
     
     SM.Instance<EventManager>().RegisterListener<TrackResetEvent>(OnTrackReset);
   }
 
-  private void OnTrackStarted(TrackFailed context)
+  private void OnDisable()
   {
-    foreach (var pip in AttemptPips)
-    {
-      pip.gameObject.SetActive(true);
-    }
+    SM.Instance<EventManager>().UnregisterListener<NewLevel>(OnNewLevel);
+    
+    SM.Instance<EventManager>().UnregisterListener<BeatAttemptEvent>(OnBeatAttempt);
+    
+    SM.Instance<EventManager>().UnregisterListener<LevelPassed>(OnLevelPassed);
+    
+    SM.Instance<EventManager>().RegisterListener<GameOver>(OnGameOver);
+    
+    SM.Instance<EventManager>().UnregisterListener<TrackStarted>(OnTrackStarted);
+    
+    SM.Instance<EventManager>().UnregisterListener<TrackFailed>(OnTrackFailed);
+    
+    SM.Instance<EventManager>().UnregisterListener<TrackResetEvent>(OnTrackReset);
   }
-
-  private void OnTrackFailed(TrackFailed context)
+  
+  private void OnTrackStarted(TrackStarted context)
   {
     for (int i = 0; i < AttemptPips.Count; i++)
     {
@@ -70,37 +84,49 @@ public class UIHandler : MonoBehaviour
       
       AttemptPips[i].gameObject.SetActive(false);
     }
+  }
+
+  private void OnTrackFailed(TrackFailed context)
+  {
+    Debug.Log("Responding to track fai;");
+    
+    for (int i = 0; i < AttemptPips.Count; i++)
+    {
+      Debug.Log("Track failed, removing a pip");
+      
+      if (i < AttemptSystem._remainingAttempts-1)
+      {
+        AttemptPips[i].gameObject.SetActive(true);
+        continue;
+      }
+      
+      AttemptPips[i].gameObject.SetActive(false);
+    }
     
     foreach (var prompt in BeatPrompts)
     {
-      prompt.PromptImageA.color = Color.black;
-      prompt.PromptImageB.color = Color.black;
+      Debug.LogFormat($"UI:Trying to set alpha");
+      prompt.CanvasGroup.alpha = 0.25f;
+      prompt.transform.localScale = Vector3.one * 0.25f;
     }
     
     Debug.LogWarningFormat($"Track was failed even after running out of attempts");
   }
-
-  private void OnDisable()
+  
+  private void OnGameOver(GameOver context)
   {
-    SM.Instance<EventManager>().UnregisterListener<NewLevel>(OnNewLevel);
-    SM.Instance<EventManager>().UnregisterListener<BeatAttemptEvent>(OnBeatAttempt);
-    
-    SM.Instance<EventManager>().UnregisterListener<LevelPassed>(OnLevelPassed);
-    
-    SM.Instance<EventManager>().UnregisterListener<TrackFailed>(OnTrackStarted);
-    SM.Instance<EventManager>().UnregisterListener<TrackFailed>(OnTrackFailed);
-    
-    SM.Instance<EventManager>().UnregisterListener<TrackResetEvent>(OnTrackReset);
+    var gameOverSplash = Instantiate(GameOverSplash, HUDCanvas.transform);
   }
+
 
   private void OnTrackReset(TrackResetEvent context)
   {
+    Debug.Log("UI:Track was reset");
       foreach (var prompt in BeatPrompts)
       {
-        prompt.PromptImageA.color = Color.white;
-        prompt.PromptImageB.color = Color.white;
+        prompt.CanvasGroup.alpha = 1f;
+        prompt.transform.localScale = Vector3.one;
       }
-    
   }
 
   private void OnLevelPassed(LevelPassed context)
@@ -150,7 +176,7 @@ public class UIHandler : MonoBehaviour
           beatPromptInstance.PromptImageA.sprite = ActionSprites[beat.Key.Action];    
         }
         
-        beatPromptInstance.transform.position = OrbitHelpers.OrbitPointFromNormalisedPosition( context.Level.World.Orbit,beat.Value);
+        beatPromptInstance.transform.position = OrbitHelpers.OrbitPointFromNormalisedPosition( context.Level.World.Orbit, beat.Value);
         
         BeatPrompts.Add(beatPromptInstance);
       }

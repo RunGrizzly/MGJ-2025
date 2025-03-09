@@ -34,6 +34,61 @@ public class GameManager : MonoBehaviour
         OnExitTrack,
         Dead
     }
+    
+    
+    //GAME MANAGER NOW GIZMOS OUT THE LEVEL NORMALISED POSITIONS
+    private void OnDrawGizmos()
+    {
+        if (_currentLevel == null)
+        {
+            return;
+        }
+        
+        if (_trackPlayer._currentTrack == null)
+        {
+            return;
+        }
+        
+        Orbit newOrbit = _currentLevel.World.Orbit;
+        
+        foreach (var beat in   _trackPlayer._currentTrack.GetNormalizedBeatTimes())
+        {
+            if (beat.Key.Action == BeatAction.Empty)
+            {
+                Gizmos.color = Color.gray;     
+            }
+           
+           else if (beat.Key.Action == BeatAction.Transfer)
+            {
+                Gizmos.color = Color.cyan;     
+            }
+
+            else
+            {
+                Gizmos.color = Color.green;     
+            }
+            
+            Gizmos.DrawSphere(OrbitHelpers.OrbitPointFromNormalisedPosition(newOrbit,beat.Value),40f);
+
+            // Gizmos.DrawSphere(OrbitHelpers.OrbitPointFromNormalisedPosition(newOrbit, beat.Key.StartTime/_currentLevel.Track.Duration),20f);
+            // Gizmos.DrawSphere(OrbitHelpers.OrbitPointFromNormalisedPosition(newOrbit,  beat.Key.EndTime/_currentLevel.Track.Duration),20f);
+            
+            
+            
+            Gizmos.color = Color.red;
+
+            var currentBeat = _trackPlayer._currentTrack.GetCurrentBeat();
+            if (currentBeat != null)
+            {
+                Gizmos.DrawWireSphere(OrbitHelpers.OrbitPointFromNormalisedPosition(newOrbit, ((currentBeat.StartTime + currentBeat.EndTime) / 2) / _trackPlayer._currentTrack.Duration), 60f);
+            }
+
+            Gizmos.color = Color.yellow;
+            
+            Gizmos.DrawSphere(OrbitHelpers.OrbitPointFromNormalisedPosition(newOrbit, _trackPlayer._progress / _trackPlayer._currentTrack.Duration),60f);
+        }
+    }
+
 
     public void OnEnable()
     {

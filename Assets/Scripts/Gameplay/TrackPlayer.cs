@@ -1,4 +1,5 @@
 #nullable enable
+using System;
 using System.Linq;
 using Events;
 using Gameplay.TrackEvents;
@@ -13,10 +14,10 @@ namespace Gameplay
         [SerializeField] private float _rate;
         public PlayableTrack _currentTrack { get; private set; }
         private InputSystem_Actions _actions;
-        private float _progress;
+        public float _progress;
         private bool _isInSegment;
         private EventManager _eventManager;
-
+        
         private void OnEnable()
         {
             _actions = new InputSystem_Actions();
@@ -92,7 +93,8 @@ namespace Gameplay
 
             if (DidMissABeat(previousSegment, currentSegment))
             {
-                previousSegment.SetState(Beat.States.Missed);
+                previousSegment.SetState(Beat.States
+                    .Missed);
                 _currentTrack.SetState(PlayableTrack.States.Failed);
                 _eventManager.DispatchEvent(new TrackFailed(_currentTrack));
                 Debug.Log("Missed a beat");

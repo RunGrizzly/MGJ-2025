@@ -1,8 +1,10 @@
 #nullable enable
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Events;
 using SGS29.Utilities;
+using UnityEngine;
 
 public class TrackResetEvent : IEvent
 {
@@ -10,6 +12,7 @@ public class TrackResetEvent : IEvent
 
 namespace Gameplay
 {
+    [Serializable]
     public class PlayableTrack
     {
         public List<Beat> Beats { get; private set; }
@@ -47,18 +50,53 @@ namespace Gameplay
             SM.Instance<EventManager>().DispatchEvent(new TrackResetEvent());
         }
 
-        private Beat? GetCurrentBeat()
+        public Beat? GetCurrentBeat()
         {
-            return Beats.FirstOrDefault(action => _progress >= action.StartTime && _progress <= action.EndTime);
+            // var beats = GetNormalizedBeatTimes();
+            //
+            var closestBeat = Beats.ElementAt(0);
+            var shortestDistance = float.MaxValue;
+            
+            
+            foreach (var beat in Beats)
+            {
+                var distance = ((beat.StartTime+beat.EndTime)/2) - _progress;
+
+                if (distance < shortestDistance && distance >0)
+                {
+                    closestBeat = beat;
+                    shortestDistance = distance;
+                }
+
+            }
+            
+            //var currentBeat= Beats.FirstOrDefault(beat => _progress >= beat.StartTime && _progress <= beat.EndTime);
+            
+            return closestBeat;
         }
 
         public static PlayableTrack FromTrackDefinition(TrackDefinition trackDefinition, float rate, float timingWindow)
         {
-            var actionSpacing = 1 / rate;
-            var actions = trackDefinition.Actions.Select((action, i) => new Beat(
+            //KYLE -  I hard coded this because I didn't have the energy to hook in the actual duration and I needed to test it.
+            var duration = 5;
+    
+            //Seconds of active time
+            var active = 1;
+            
+            //Seconds of deadzone as a portion of the duration
+            var deadZone = duration-active;
+            
+            //The actual active duration that we're working with that sits in the middle of the deadzones
+            float activeDuration = duration - (deadZone);
+           
+            //Figure out the remaining interval that we will spawn into
+            float interval = activeDuration /(trackDefinition.Actions.Count-1) ;
+            
+            var actions = trackDefinition.Actions.Select((action, i) => new Beat
+            (
                 action,
-                i * actionSpacing,
-                i * actionSpacing + timingWindow,
+                (deadZone + (i * interval))-timingWindow,
+                (deadZone + (i * interval))+timingWindow,
                 Beat.States.Upcoming,
                 i
             ));
@@ -67,15 +105,16 @@ namespace Gameplay
                 // Debug.Log($"Beat: {beat.Action} {beat.StartTime}-{beat.EndTime}");
             }
 
-            return new PlayableTrack(actions.ToList(), trackDefinition.Actions.Count * actionSpacing);
+            return new PlayableTrack(actions.ToList(), duration);
         }
 
         public Dictionary<Beat, float> GetNormalizedBeatTimes()
         {
             var normalizedBeatTimes = new Dictionary<Beat, float>();
+            
             foreach (var beat in Beats)
             {
-                normalizedBeatTimes.Add(beat, (beat.StartTime + beat.EndTime) / 2 / Duration);
+                normalizedBeatTimes.Add(beat, ((beat.StartTime + beat.EndTime) / 2) / Duration);
                 // Debug.Log($"KYLEMESS: Beat times: {beat.StartTime / Duration}");
             }
 

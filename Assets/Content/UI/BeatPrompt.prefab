@@ -140,7 +140,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: ae963298de5c8834d9635084b8ff74ba, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 0f4df063111a50140ab8dc8463b0b96e, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -160,6 +160,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6860255301264910925}
   - component: {fileID: 597183617970045796}
+  - component: {fileID: 2354509463216567638}
   - component: {fileID: 6712844121865795843}
   - component: {fileID: 211083038749707042}
   m_Layer: 5
@@ -188,7 +189,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 20, y: 20}
+  m_SizeDelta: {x: 40, y: 40}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &597183617970045796
 Canvas:
@@ -213,6 +214,18 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
+--- !u!225 &2354509463216567638
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7489617987380638600}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 0
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 1
 --- !u!114 &6712844121865795843
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -227,6 +240,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   PromptImageA: {fileID: 7164051975443228461}
   PromptImageB: {fileID: 2923346170680792986}
+  CanvasGroup: {fileID: 2354509463216567638}
 --- !u!114 &211083038749707042
 MonoBehaviour:
   m_ObjectHideFlags: 0
