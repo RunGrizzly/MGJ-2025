@@ -9,8 +9,10 @@ namespace Gameplay
         public Vector3 Position { get; private set; }
         public Orbit Orbit { get; private set; }
 
-        public Material PlanetMaterial = null;
+        //public Material PlanetMaterial = null;
 
+        public MeshRenderer PlanetRenderer = null;
+        
         public List<Texture2D> SurfaceMasks = new List<Texture2D>();
         
         public void Init(float radius, Vector3 position)
@@ -22,13 +24,13 @@ namespace Gameplay
             transform.localScale = Vector3.one * radius;
 
             Orbit = new Orbit(transform, Vector3.zero, 1.2f, transform.up);
+            
+            SetRandomSurface();
         }
 
-        public void SetPlanetSurface(int maskIndex)
+        public void SetRandomSurface()
         {
-            
-            
-            
+          PlanetRenderer.material.SetTexture("_Mask", SurfaceMasks[Random.Range(0,SurfaceMasks.Count)]);
         }
     }
 }
