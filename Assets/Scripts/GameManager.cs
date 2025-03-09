@@ -109,7 +109,7 @@ public class GameManager : MonoBehaviour
     {
         _levels = Enumerable.Range(0, 5).Select(_levelGenerator.Generate).ToList();
         
-        //StartNextLevel();
+        StartNextLevel();
     }
 
     private void StartTrack(GameStarted _)
