@@ -34,6 +34,7 @@ namespace Gameplay
         private void OnTrackFailed(TrackEvents.TrackFailed evt)
         {
             _currentAttempt++;
+            Debug.Log($"Attempt failed, Remaining attempts: {_maxAttempts - _currentAttempt}");
             _playableTrack.Reset();
             if (_currentAttempt >= _maxAttempts)
             {
