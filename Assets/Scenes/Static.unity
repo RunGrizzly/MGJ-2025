@@ -612,16 +612,19 @@ MonoBehaviour:
     - slow
     - fast
     - fastest
+    - menu
     _keys:
     - slowest
     - slow
     - fast
     - fastest
+    - menu
     _values:
     - {fileID: 8300000, guid: 4443eb7f58ed89e419611732c9bd01ed, type: 3}
-    - {fileID: 8300000, guid: 4443eb7f58ed89e419611732c9bd01ed, type: 3}
-    - {fileID: 8300000, guid: 0c7c2f40f13dfa84292dbe18ae21dbff, type: 3}
-    - {fileID: 8300000, guid: 6af1f84af8ec9a948ac8996870f64728, type: 3}
+    - {fileID: 8300000, guid: 9bf0da37d91e4dc41a89031844e37f04, type: 3}
+    - {fileID: 8300000, guid: d3228d0e304d8664c865b59a3b74a7c9, type: 3}
+    - {fileID: 8300000, guid: 81253b82308c1f349b19cc84ffd75338, type: 3}
+    - {fileID: 8300000, guid: 920748f46f65d4f48b5f4b45941303f7, type: 3}
   Stings:
     reorderableList:
       canAdd: 1
@@ -661,7 +664,7 @@ MonoBehaviour:
   SoundscapeID: 
   GameTempo: 0
   SpeedFactor: 0.05
-  Crossfade: {x: 0.4, y: 0.8}
+  Crossfade: {x: 2.85, y: 1.65}
 --- !u!4 &625771823
 Transform:
   m_ObjectHideFlags: 0
@@ -1504,6 +1507,7 @@ MonoBehaviour:
   HUDCanvas: {fileID: 751705322}
   GameOverSplash: {fileID: 9210527948593816655, guid: be394e289ee0f9644b48f8b0b63fb17c, type: 3}
   TransitionSplash: {fileID: 9210527948593816655, guid: e56f368ca42d63140987bb46d56ce8e3, type: 3}
+  m_transitionSplash: {fileID: 0}
   BeatPromptTemplate: {fileID: 6712844121865795843, guid: edd358fbd4325a74a88461df786ad8ff, type: 3}
   BeatPrompts: []
   ActionSprites:
@@ -1703,7 +1707,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 51.5
+  m_fontSize: 51.55
   m_fontSizeBase: 116
   m_fontWeight: 400
   m_enableAutoSizing: 1

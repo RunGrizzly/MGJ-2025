@@ -44,6 +44,10 @@ public class AudioHandler : MonoBehaviour
     SM.Instance<EventManager>().RegisterListener<NewLevel>(OnNewLevel);
     SM.Instance<EventManager>().RegisterListener<BeatAttemptEvent>(OnBeatAttempt);
     
+    SM.Instance<EventManager>().RegisterListener<GameManager.TransitionStarted>(OnTransitionStarted);
+    
+    SM.Instance<EventManager>().RegisterListener<TrackStarted>(OnTrackStarted);
+    
     SoundscapeSourceB.Pause();
     EvaluateSoundscape();   
   }
@@ -52,7 +56,22 @@ public class AudioHandler : MonoBehaviour
   {
     SM.Instance<EventManager>().UnregisterListener<NewLevel>(OnNewLevel);
     SM.Instance<EventManager>().UnregisterListener<BeatAttemptEvent>(OnBeatAttempt);
+    
+    SM.Instance<EventManager>().UnregisterListener<GameManager.TransitionStarted>(OnTransitionStarted);
+    
+    SM.Instance<EventManager>().RegisterListener<TrackStarted>(OnTrackStarted);
   }
+
+  private void OnTrackStarted(TrackStarted context)
+  {
+    SetSoundscape("fast");
+  }
+
+  private void OnTransitionStarted(GameManager.TransitionStarted contextj)
+  {
+    SetSoundscape("slowest");
+  }
+
 
   private void OnBeatAttempt(BeatAttemptEvent context)
   {

@@ -93,6 +93,7 @@ public class UIHandler : MonoBehaviour
     if (m_transitionSplash == null)
     { 
       m_transitionSplash = Instantiate(TransitionSplash, HUDCanvas.transform);
+      m_transitionSplash.GetComponent<Animator>().SetTrigger("Blink");
     }
   }
   

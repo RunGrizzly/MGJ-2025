@@ -8,6 +8,7 @@ namespace Gameplay
         public Vector3 Position { get; private set; }
         public Orbit Orbit { get; private set; }
 
+        
     
         public void Init(float radius, Vector3 position)
         {
