@@ -1,7 +1,6 @@
 using Events;
 using SGS29.Utilities;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Gameplay
 {
@@ -34,7 +33,8 @@ namespace Gameplay
 
         private void OnTrackFailed(TrackEvents.TrackFailed evt)
         {
-            _remainingAttempts-=1;
+            _remainingAttempts--;
+            Debug.Log($"Attempt failed, Remaining attempts: {_remainingAttempts}");
             _playableTrack.Reset();
             
             

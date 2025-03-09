@@ -52,10 +52,13 @@ namespace Gameplay
                     break;
                 case { State: Beat.States.InProgress }:
                     _currentTrack.CurrentBeat.SetState(Beat.States.Failed);
+                    _currentTrack.SetState(PlayableTrack.States.Failed);
+                    _eventManager.DispatchEvent(new TrackFailed(_currentTrack));
                     Debug.Log("Tried to hit the wrong beat");
                     break;
                 case null:
                     _currentTrack.SetState(PlayableTrack.States.Failed);
+                    _eventManager.DispatchEvent(new TrackFailed(_currentTrack));
                     Debug.Log("Tried to hit a beat, but no beat");
                     break;
             }
@@ -89,35 +92,32 @@ namespace Gameplay
 
             if (DidMissABeat(previousSegment, currentSegment))
             {
-                // previousSegment.SetState(Beat.States.Missed);
-                // Debug.Log("Missed a beat");
+                previousSegment.SetState(Beat.States.Missed);
+                _currentTrack.SetState(PlayableTrack.States.Failed);
+                _eventManager.DispatchEvent(new TrackFailed(_currentTrack));
+                Debug.Log("Missed a beat");
             }
 
             UpdateTrackState();
 
             if (_progress >= _currentTrack.Duration)
             {
-                if (_currentTrack.State == PlayableTrack.States.Passed)
-                {
-                    // Debug.Log("PASSED TRACK");
-                    // var trackEvent = new TrackEvents.TrackPassed(_currentTrack);
-                    // _eventManager.DispatchEvent(trackEvent);
-                }
-                else
-                {
-                    _currentTrack.Reset();
-                    var trackEvent = new TrackFailed(_currentTrack);
-                    _eventManager.DispatchEvent(trackEvent);
-                }
+                _currentTrack.Reset();
+                _currentTrack.SetState(PlayableTrack.States.Playing);
             }
         }
 
-        private static bool DidMissABeat(Beat? previous, Beat? current)
+        private bool DidMissABeat(Beat? previous, Beat? current)
         {
-            var isDifferentBeats = previous == current;
-            var wasPreviousBeatAction = previous != null && previous.Action != BeatAction.Empty;
+            if (_currentTrack.State != PlayableTrack.States.Playing)
+            {
+                return false;
+            }
+
+            var isDifferentBeats = previous != current;
+            var wasPreviousABeatAction = previous != null && previous.Action != BeatAction.Empty;
             var wasPreviousBeatHit = previous is { State: Beat.States.Success };
-            return isDifferentBeats && wasPreviousBeatAction && !wasPreviousBeatHit;
+            return isDifferentBeats && wasPreviousABeatAction && !wasPreviousBeatHit;
         }
     }
 
