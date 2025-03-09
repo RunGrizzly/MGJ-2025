@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Gameplay
@@ -8,8 +9,10 @@ namespace Gameplay
         public Vector3 Position { get; private set; }
         public Orbit Orbit { get; private set; }
 
+        public Material PlanetMaterial = null;
+
+        public List<Texture2D> SurfaceMasks = new List<Texture2D>();
         
-    
         public void Init(float radius, Vector3 position)
         {
             Radius = radius;
@@ -19,6 +22,13 @@ namespace Gameplay
             transform.localScale = Vector3.one * radius;
 
             Orbit = new Orbit(transform, Vector3.zero, 1.2f, transform.up);
+        }
+
+        public void SetPlanetSurface(int maskIndex)
+        {
+            
+            
+            
         }
     }
 }
