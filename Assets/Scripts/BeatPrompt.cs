@@ -16,7 +16,7 @@ public class BeatPrompt : MonoBehaviour
     private void Update()
     {
         transform.rotation = Quaternion.LookRotation(transform.position - Camera.main.transform.position, Vector3.up);
-        Debug.LogFormat(gameObject,$"CanvasGroup alpha is {CanvasGroup.alpha}");
+        // Debug.LogFormat(gameObject,$"CanvasGroup alpha is {CanvasGroup.alpha}");
     }
 
     public void FormatPrompt(bool enableA, bool enableB)

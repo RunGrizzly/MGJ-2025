@@ -4,8 +4,6 @@ using Events;
 using Gameplay;
 using Gameplay.TrackEvents;
 using SGS29.Utilities;
-using Unity.Mathematics;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Splines;
 
@@ -34,8 +32,8 @@ public class GameManager : MonoBehaviour
         OnExitTrack,
         Dead
     }
-    
-    
+
+
     //GAME MANAGER NOW GIZMOS OUT THE LEVEL NORMALISED POSITIONS
     private void OnDrawGizmos()
     {
@@ -43,49 +41,53 @@ public class GameManager : MonoBehaviour
         {
             return;
         }
-        
+
         if (_trackPlayer._currentTrack == null)
         {
             return;
         }
-        
+
         Orbit newOrbit = _currentLevel.World.Orbit;
-        
-        foreach (var beat in   _trackPlayer._currentTrack.GetNormalizedBeatTimes())
+
+        foreach (var beat in _trackPlayer._currentTrack.GetNormalizedBeatTimes())
         {
             if (beat.Key.Action == BeatAction.Empty)
             {
-                Gizmos.color = Color.gray;     
+                Gizmos.color = Color.gray;
             }
-           
-           else if (beat.Key.Action == BeatAction.Transfer)
+
+            else if (beat.Key.Action == BeatAction.Transfer)
             {
-                Gizmos.color = Color.cyan;     
+                Gizmos.color = Color.cyan;
             }
 
             else
             {
-                Gizmos.color = Color.green;     
+                Gizmos.color = Color.green;
             }
-            
-            Gizmos.DrawSphere(OrbitHelpers.OrbitPointFromNormalisedPosition(newOrbit,beat.Value),40f);
+
+            Gizmos.DrawSphere(OrbitHelpers.OrbitPointFromNormalisedPosition(newOrbit, beat.Value), 40f);
 
             // Gizmos.DrawSphere(OrbitHelpers.OrbitPointFromNormalisedPosition(newOrbit, beat.Key.StartTime/_currentLevel.Track.Duration),20f);
             // Gizmos.DrawSphere(OrbitHelpers.OrbitPointFromNormalisedPosition(newOrbit,  beat.Key.EndTime/_currentLevel.Track.Duration),20f);
-            
-            
-            
+
+
             Gizmos.color = Color.red;
 
             var currentBeat = _trackPlayer._currentTrack.GetCurrentBeat();
             if (currentBeat != null)
             {
-                Gizmos.DrawWireSphere(OrbitHelpers.OrbitPointFromNormalisedPosition(newOrbit, ((currentBeat.StartTime + currentBeat.EndTime) / 2) / _trackPlayer._currentTrack.Duration), 60f);
+                Gizmos.DrawWireSphere(
+                    OrbitHelpers.OrbitPointFromNormalisedPosition(newOrbit,
+                        ((currentBeat.StartTime + currentBeat.EndTime) / 2) / _trackPlayer._currentTrack.Duration),
+                    60f);
             }
 
             Gizmos.color = Color.yellow;
-            
-            Gizmos.DrawSphere(OrbitHelpers.OrbitPointFromNormalisedPosition(newOrbit, _trackPlayer._progress / _trackPlayer._currentTrack.Duration),60f);
+
+            Gizmos.DrawSphere(
+                OrbitHelpers.OrbitPointFromNormalisedPosition(newOrbit,
+                    _trackPlayer._progress / _trackPlayer._currentTrack.Duration), 60f);
         }
     }
 
@@ -96,7 +98,7 @@ public class GameManager : MonoBehaviour
 
         _eventManager = SM.Instance<EventManager>();
         _eventManager.RegisterListener<TrackStarted>(evt => Debug.Log("Track started"));
-        _eventManager.RegisterListener<GameStarted>(StartTrack);
+        _eventManager.RegisterListener<GameStarted>(OnGameStarted);
         _eventManager.RegisterListener<GameOver>(evt => TrackFailed());
         _eventManager.RegisterListener<TrackPassed>(evt => TrackPassed());
         _eventManager.RegisterListener<GameOver>(evt => Debug.Log("GAME OVER LOSER"));
@@ -108,14 +110,11 @@ public class GameManager : MonoBehaviour
     public void Start()
     {
         _levels = Enumerable.Range(0, 5).Select(_levelGenerator.Generate).ToList();
-        
-        StartNextLevel();
     }
 
-    private void StartTrack(GameStarted _)
+    private void OnGameStarted(GameStarted evt)
     {
-        _trackPlayer.Play(_currentLevel.Track);
-        _currentState = GameplayState.OnTrack;
+        StartNextLevel();
     }
 
     private void StartNextLevel()
@@ -123,7 +122,8 @@ public class GameManager : MonoBehaviour
         _progress = 0f;
         _currentLevel = _currentLevel == null ? _levels.First() : _levels[_currentLevel.Number + 1];
         SM.Instance<EventManager>().DispatchEvent(new NewLevel(_currentLevel));
-        StartTrack(null);
+        _trackPlayer.Play(_currentLevel.Track);
+        _currentState = GameplayState.OnTrack;
         _splineAnimate.Completed -= StartNextLevel;
         _splineAnimate?.Container?.KnotLinkCollection.Clear();
     }
@@ -165,14 +165,14 @@ public class GameManager : MonoBehaviour
                     0.5f);
                 var pos2 = new Vector3((pos1.x + pos3.x) / 2, 0, -2500f);
 
-                var knot1 = new BezierKnot(pos1, 0f,  1000f);
+                var knot1 = new BezierKnot(pos1, 0f, 1000f);
                 var knot3 = new BezierKnot(pos3, 0f, 750f);
                 var spline = new Spline();
                 spline.Add(knot1, TangentMode.Mirrored);
                 spline.Add(pos2);
                 spline.Add(knot3, TangentMode.Mirrored);
 
-                
+
                 _container.Spline = spline;
                 _splineAnimate.Container = _container;
 
@@ -183,7 +183,7 @@ public class GameManager : MonoBehaviour
                 _splineAnimate.Completed += StartNextLevel;
 
                 _currentState = GameplayState.Transitioning;
-                
+
                 _levels.Add(_levelGenerator.Generate(_levels.Count));
                 SM.Instance<EventManager>().DispatchEvent(new TransitionStarted());
                 break;
@@ -197,8 +197,7 @@ public class GameManager : MonoBehaviour
         _currentState = GameplayState.Dead;
     }
 
-    public class TransitionStarted: IEvent
+    public class TransitionStarted : IEvent
     {
-        
     }
 }

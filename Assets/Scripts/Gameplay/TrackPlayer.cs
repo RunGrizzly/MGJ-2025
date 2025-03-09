@@ -17,7 +17,7 @@ namespace Gameplay
         public float _progress;
         private bool _isInSegment;
         private EventManager _eventManager;
-        
+
         private void OnEnable()
         {
             _actions = new InputSystem_Actions();
@@ -79,7 +79,6 @@ namespace Gameplay
             if (!beatsNotHit.Any())
             {
                 _currentTrack.SetState(PlayableTrack.States.Passed);
-                // _actions.Ship.Disable();
                 _eventManager.DispatchEvent(new TrackPassed(_currentTrack));
             }
         }
