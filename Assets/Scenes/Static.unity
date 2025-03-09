@@ -626,7 +626,7 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 9bf0da37d91e4dc41a89031844e37f04, type: 3}
     - {fileID: 8300000, guid: d3228d0e304d8664c865b59a3b74a7c9, type: 3}
     - {fileID: 8300000, guid: 81253b82308c1f349b19cc84ffd75338, type: 3}
-    - {fileID: 8300000, guid: 920748f46f65d4f48b5f4b45941303f7, type: 3}
+    - {fileID: 8300000, guid: c7b41e1fb3a2a7a4f913827a3a6d3cf5, type: 3}
     - {fileID: 8300000, guid: c7b41e1fb3a2a7a4f913827a3a6d3cf5, type: 3}
   Stings:
     reorderableList:
@@ -1031,7 +1031,7 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.3
-  far clip plane: 1000
+  far clip plane: 100000
   field of view: 60.000004
   orthographic: 0
   orthographic size: 5
@@ -1058,7 +1058,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1298735417}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.05067968, y: 0.29130632, z: 0.16339006, w: 0.9412098}
+  m_LocalRotation: {x: 0.05062462, y: 0.29098913, z: 0.16340712, w: 0.9413079}
   m_LocalPosition: {x: 0, y: 0.8, z: -38.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
