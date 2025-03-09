@@ -19,7 +19,7 @@ public class GameManager : MonoBehaviour
     public SplineContainer _container;
     private EventManager _eventManager;
     private TrackDefinition _trackDefinition;
-    private GameplayState _currentState;
+    private GameplayState _currentState = GameplayState.InHangar;
     private List<Level> _levels;
     private float _progress;
     private Level _currentLevel;
@@ -108,6 +108,7 @@ public class GameManager : MonoBehaviour
     public void Start()
     {
         _levels = Enumerable.Range(0, 5).Select(_levelGenerator.Generate).ToList();
+        
         StartNextLevel();
     }
 
@@ -171,7 +172,7 @@ public class GameManager : MonoBehaviour
                 spline.Add(pos2);
                 spline.Add(knot3, TangentMode.Mirrored);
 
-
+                
                 _container.Spline = spline;
                 _splineAnimate.Container = _container;
 
@@ -184,6 +185,7 @@ public class GameManager : MonoBehaviour
                 _currentState = GameplayState.Transitioning;
                 
                 _levels.Add(_levelGenerator.Generate(_levels.Count));
+                SM.Instance<EventManager>().DispatchEvent(new TransitionStarted());
                 break;
             default:
                 return;
@@ -193,5 +195,10 @@ public class GameManager : MonoBehaviour
     private void TrackFailed()
     {
         _currentState = GameplayState.Dead;
+    }
+
+    public class TransitionStarted: IEvent
+    {
+        
     }
 }
