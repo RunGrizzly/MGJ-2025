@@ -1086,8 +1086,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1298735417}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: -0.2114101, w: 0.97739744}
-  m_LocalPosition: {x: 0.69795233, y: 0, z: -2.5900002}
+  m_LocalRotation: {x: -0.088297516, y: 0.40821975, z: -0.19208795, w: 0.88806665}
+  m_LocalPosition: {x: -0.18374717, y: 0.000000030360802, z: -2.9116306}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1275,6 +1275,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _reactionWindow: 1.2
   _rate: 1
+  _progress: 0
 --- !u!4 &1616786875
 Transform:
   m_ObjectHideFlags: 0
@@ -1684,7 +1685,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 51.45
+  m_fontSize: 51.5
   m_fontSizeBase: 116
   m_fontWeight: 400
   m_enableAutoSizing: 1
