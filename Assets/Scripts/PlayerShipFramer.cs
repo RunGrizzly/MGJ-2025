@@ -44,6 +44,7 @@ public class PlayerShipFramer : MonoBehaviour
         TransitionCam.Priority = 100;
     }
     
+    
     private void OnTrackStarted(TrackStarted context)
     {
         TransitionCam.Priority = 0;
