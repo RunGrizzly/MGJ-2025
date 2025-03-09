@@ -99,7 +99,7 @@ public class GameManager : MonoBehaviour
         _eventManager = SM.Instance<EventManager>();
         _eventManager.RegisterListener<TrackStarted>(evt => Debug.Log("Track started"));
         _eventManager.RegisterListener<GameStarted>(OnGameStarted);
-        _eventManager.RegisterListener<GameOver>(evt => TrackFailed());
+        _eventManager.RegisterListener<GameOver>(evt => OnGameOver());
         _eventManager.RegisterListener<TrackPassed>(evt => TrackPassed());
         _eventManager.RegisterListener<GameOver>(evt => Debug.Log("GAME OVER LOSER"));
 
@@ -201,7 +201,7 @@ public class GameManager : MonoBehaviour
         SM.Instance<EventManager>().DispatchEvent(new TransitionEnded());
     }
 
-    private void TrackFailed()
+    private void OnGameOver()
     {
         _currentState = GameplayState.Dead;
     }

@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEngine;
 
 namespace Gameplay
@@ -14,13 +15,10 @@ namespace Gameplay
             Actions = { BeatAction.Action1, BeatAction.Action2, BeatAction.Action4, BeatAction.Action3 }
         };
 
-        public TrackDefinition Generate(int segmentCount, float complexity)
+        public TrackDefinition Generate(int segmentCount, int possibleActions)
         {
-            return complexity switch
-            {
-                < 1 => EasyTrackDefinition,
-                _ => HardTrackDefinition
-            };
+            var actions = Enumerable.Range(0, 16).Select(_ => (BeatAction)Random.Range(0, possibleActions + 1));
+            return new TrackDefinition() { Actions = actions.ToList() };
         }
     }
 }

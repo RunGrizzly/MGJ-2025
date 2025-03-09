@@ -49,8 +49,11 @@ public class GameStateManager : MonoSingleton<GameStateManager>
                 break;
             case GameState.Playing:
                 currentState = GameState.GameOver;
+                _actions.Ship.Transfer.performed += OnAction;
                 break;
             case GameState.GameOver:
+                currentState = GameState.MainMenu;
+                _eventManager.DispatchEvent(new ResetGame());
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
