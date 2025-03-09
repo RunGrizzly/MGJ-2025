@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Events;
 using Gameplay;
@@ -5,6 +6,7 @@ using Gameplay.TrackEvents;
 using SGS29.Utilities;
 using UnityEngine;
 using RotaryHeart.Lib.SerializableDictionary;
+using UnityEngine.UI;
 
 [System.Serializable]
 public class BeatActionSpriteDictionary : SerializableDictionaryBase<BeatAction, Sprite>
@@ -29,7 +31,10 @@ public class UIHandler : MonoBehaviour
   public BeatActionSpriteDictionary ActionSprites = new BeatActionSpriteDictionary();
 
   public BeatStateGameObjectDictionary AttemptSplashes = new BeatStateGameObjectDictionary();
-  
+
+  public List<Image> AttemptPips = new List<Image>();
+
+  public AttemptSystem AttemptSystem = null;
   
   
   private void OnEnable()
@@ -38,6 +43,33 @@ public class UIHandler : MonoBehaviour
     SM.Instance<EventManager>().RegisterListener<BeatAttemptEvent>(OnBeatAttempt);
     
     SM.Instance<EventManager>().RegisterListener<LevelPassed>(OnLevelPassed);
+    
+    SM.Instance<EventManager>().RegisterListener<TrackFailed>(OnTrackStarted);
+    SM.Instance<EventManager>().RegisterListener<TrackFailed>(OnTrackFailed);
+  }
+
+  private void OnTrackStarted(TrackFailed context)
+  {
+    foreach (var pip in AttemptPips)
+    {
+      pip.gameObject.SetActive(true);
+    }
+  }
+
+  private void OnTrackFailed(TrackFailed context)
+  {
+    for (int i = 0; i < AttemptPips.Count; i++)
+    {
+      if (i < AttemptSystem._remainingAttempts)
+      {
+        AttemptPips[i].gameObject.SetActive(true);
+        continue;
+      }
+      
+      AttemptPips[i].gameObject.SetActive(false);
+    }
+    
+    Debug.LogWarningFormat($"Track was failed even after running out of attempts");
   }
 
   private void OnDisable()
@@ -46,6 +78,14 @@ public class UIHandler : MonoBehaviour
     SM.Instance<EventManager>().UnregisterListener<BeatAttemptEvent>(OnBeatAttempt);
     
     SM.Instance<EventManager>().UnregisterListener<LevelPassed>(OnLevelPassed);
+    
+    SM.Instance<EventManager>().UnregisterListener<TrackFailed>(OnTrackStarted);
+    SM.Instance<EventManager>().UnregisterListener<TrackFailed>(OnTrackFailed);
+  }
+
+  private void OnTrackFailed()
+  {
+    
   }
 
   private void OnLevelPassed(LevelPassed context)

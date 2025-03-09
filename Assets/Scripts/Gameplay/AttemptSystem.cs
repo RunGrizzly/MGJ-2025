@@ -8,7 +8,8 @@ namespace Gameplay
     public class AttemptSystem : MonoBehaviour
     {
         [SerializeField] private int _maxAttempts = 3;
-        [SerializeField] private int _currentAttempt = 0;
+        public int _remainingAttempts = 3;
+        
         private PlayableTrack _playableTrack;
         private EventManager _eventManager;
 
@@ -28,14 +29,16 @@ namespace Gameplay
         private void OnTrackStarted(TrackEvents.TrackStarted evt)
         {
             _playableTrack = evt.Track;
-            _currentAttempt = 0;
+            _remainingAttempts = _maxAttempts;
         }
 
         private void OnTrackFailed(TrackEvents.TrackFailed evt)
         {
-            _currentAttempt++;
+            _remainingAttempts-=1;
             _playableTrack.Reset();
-            if (_currentAttempt >= _maxAttempts)
+            
+            
+            if (_remainingAttempts == 0)
             {
                 _eventManager.DispatchEvent(new GameOver());
             }
