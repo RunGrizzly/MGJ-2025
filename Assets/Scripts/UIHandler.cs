@@ -6,6 +6,7 @@ using Gameplay.TrackEvents;
 using SGS29.Utilities;
 using UnityEngine;
 using RotaryHeart.Lib.SerializableDictionary;
+using TMPro;
 using UnityEngine.UI;
 
 [System.Serializable]
@@ -42,7 +43,8 @@ public class UIHandler : MonoBehaviour
   public List<Image> AttemptPips = new List<Image>();
 
   public AttemptSystem AttemptSystem = null;
-  
+
+  public TextMeshProUGUI ClearedDisplay = null;
   
   private void OnEnable()
   {
@@ -230,6 +232,9 @@ public class UIHandler : MonoBehaviour
         beatPromptInstance.transform.position = OrbitHelpers.OrbitPointFromNormalisedPosition( context.Level.World.Orbit,beat.Value);
       }
     }
+
+    ClearedDisplay.text = (context.Level.Number+1).ToString();
+
   }
   
   private void OnNewLevel(NewLevel context)
