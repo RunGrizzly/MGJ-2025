@@ -47,6 +47,7 @@ public class PlayerShipFramer : MonoBehaviour
     private void OnTrackStarted(TrackStarted context)
     {
         TransitionCam.Priority = 0;
+        transform.localRotation = Quaternion.Euler(Vector3.zero);
     }
     
     private void OnMainMenu(MainMenu context)

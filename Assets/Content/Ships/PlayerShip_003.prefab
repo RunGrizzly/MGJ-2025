@@ -28,7 +28,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1266557669398499105}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.112119354, y: 0, z: 0, w: 0.9936948}
+  m_LocalRotation: {x: 0.11211935, y: 0, z: -0, w: 0.9936948}
   m_LocalPosition: {x: 0, y: 0.8, z: -3.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -62,7 +62,7 @@ MonoBehaviour:
     FieldOfView: 60.000004
     OrthographicSize: 5
     NearClipPlane: 0.3
-    FarClipPlane: 1000
+    FarClipPlane: 100000
     Dutch: 0
     ModeOverride: 0
     PhysicalProperties:
@@ -137,9 +137,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   NoiseProfile: {fileID: 11400000, guid: 554b0ed52734c154eab51f6cedd3a7d7, type: 2}
   PivotOffset: {x: 0, y: 0, z: 0}
-  AmplitudeGain: 1.5
-  FrequencyGain: 1.75
-  m_NoiseOffsets: {x: 0, y: 0, z: 0}
+  AmplitudeGain: 2
+  FrequencyGain: 1.5
+  m_NoiseOffsets: {x: -877.7528, y: 608.3827, z: -657.8241}
 --- !u!1 &2601207721445472220
 GameObject:
   m_ObjectHideFlags: 0
@@ -152,7 +152,7 @@ GameObject:
   - component: {fileID: 4720527966640315543}
   - component: {fileID: 5850832923524935957}
   - component: {fileID: 3094547083773688768}
-  - component: {fileID: 709732281090704513}
+  - component: {fileID: 3220211783878331082}
   m_Layer: 0
   m_Name: PlayerCamera
   m_TagString: Untagged
@@ -168,7 +168,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2601207721445472220}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.00009903573, y: 0.29535997, z: -0.00003061714, w: 0.9553861}
+  m_LocalRotation: {x: 0.000098952834, y: 0.29536003, z: -0.000030591455, w: 0.95538604}
   m_LocalPosition: {x: 0, y: 0.8, z: -3.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -202,7 +202,7 @@ MonoBehaviour:
     FieldOfView: 60.000004
     OrthographicSize: 5
     NearClipPlane: 0.3
-    FarClipPlane: 1000
+    FarClipPlane: 100000
     Dutch: 19.7
     ModeOverride: 0
     PhysicalProperties:
@@ -263,14 +263,14 @@ MonoBehaviour:
   CustomTarget: {fileID: 0}
   FocusDepthOffset: 0
   Damping: 0.2
---- !u!114 &709732281090704513
+--- !u!114 &3220211783878331082
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2601207721445472220}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 68bb026fafb42b14791938953eaace77, type: 3}
   m_Name: 
@@ -279,7 +279,7 @@ MonoBehaviour:
   PivotOffset: {x: 0, y: 0, z: 0}
   AmplitudeGain: 1
   FrequencyGain: 1
-  m_NoiseOffsets: {x: 0, y: 0, z: 0}
+  m_NoiseOffsets: {x: 766.97424, y: -856.23926, z: -539.6793}
 --- !u!1 &5440530332068626011
 GameObject:
   m_ObjectHideFlags: 0
