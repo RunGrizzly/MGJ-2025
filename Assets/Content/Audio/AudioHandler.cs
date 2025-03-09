@@ -48,6 +48,10 @@ public class AudioHandler : MonoBehaviour
     
     SM.Instance<EventManager>().RegisterListener<TrackStarted>(OnTrackStarted);
     
+    SM.Instance<EventManager>().RegisterListener<GameOver>(OnGameOver);
+    
+    SM.Instance<EventManager>().RegisterListener<MainMenu>(OnMainMenu);
+    
     SoundscapeSourceB.Pause();
     EvaluateSoundscape();   
   }
@@ -59,7 +63,21 @@ public class AudioHandler : MonoBehaviour
     
     SM.Instance<EventManager>().UnregisterListener<GameManager.TransitionStarted>(OnTransitionStarted);
     
-    SM.Instance<EventManager>().RegisterListener<TrackStarted>(OnTrackStarted);
+    SM.Instance<EventManager>().UnregisterListener<TrackStarted>(OnTrackStarted);
+    
+    SM.Instance<EventManager>().UnregisterListener<GameOver>(OnGameOver);
+    
+    SM.Instance<EventManager>().UnregisterListener<MainMenu>(OnMainMenu);
+  }
+
+  private void OnMainMenu(MainMenu context)
+  {
+    SetSoundscape("mainmenu");
+  }
+
+  private void OnGameOver(GameOver context)
+  {
+    SetSoundscape("gameover");
   }
 
   private void OnTrackStarted(TrackStarted context)
