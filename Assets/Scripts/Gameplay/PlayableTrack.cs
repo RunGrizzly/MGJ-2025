@@ -77,11 +77,7 @@ namespace Gameplay
 
         public static PlayableTrack FromTrackDefinition(TrackDefinition trackDefinition, float rate, float timingWindow)
         {
-            //KYLE -  I hard coded this because I didn't have the energy to hook in the actual duration and I needed to test it.
-            var duration = 5;
-    
-            //Seconds of active time
-            var active = 1;
+            var duration = trackDefinition.Actions.Count / rate;
             
             //Seconds of deadzone as a portion of the duration
             var deadZone = duration-active;
