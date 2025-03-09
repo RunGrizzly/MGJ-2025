@@ -1058,7 +1058,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1298735417}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.11211936, y: 0, z: 0, w: 0.9936948}
+  m_LocalRotation: {x: 0.05062462, y: 0.29098913, z: 0.16340712, w: 0.9413079}
   m_LocalPosition: {x: 0, y: 0.8, z: -38.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1512,6 +1512,7 @@ MonoBehaviour:
   GameOverSplash: {fileID: 9210527948593816655, guid: be394e289ee0f9644b48f8b0b63fb17c, type: 3}
   TransitionSplash: {fileID: 9210527948593816655, guid: e56f368ca42d63140987bb46d56ce8e3, type: 3}
   MainMenuSplash: {fileID: 9210527948593816655, guid: fe886e262c91fc84a85ee687510621b1, type: 3}
+  LaunchPrepareSplash: {fileID: 9210527948593816655, guid: dd17a94ee04257849a36081c800fb102, type: 3}
   BeatPromptTemplate: {fileID: 6712844121865795843, guid: edd358fbd4325a74a88461df786ad8ff, type: 3}
   BeatPrompts: []
   ActionSprites:
@@ -1712,7 +1713,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 51.5
+  m_fontSize: 51.45
   m_fontSizeBase: 116
   m_fontWeight: 400
   m_enableAutoSizing: 1

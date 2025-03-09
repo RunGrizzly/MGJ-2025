@@ -33,6 +33,9 @@ public class UIHandler : MonoBehaviour
   public CanvasGroup MainMenuSplash = null;
   private CanvasGroup m_mainMenuSplash = null;
   
+  public CanvasGroup LaunchPrepareSplash = null;
+  private CanvasGroup m_launchPrepareSplash = null;
+  
   public BeatPrompt BeatPromptTemplate;
   public List<BeatPrompt> BeatPrompts = new List<BeatPrompt>();
 
@@ -117,6 +120,11 @@ public class UIHandler : MonoBehaviour
         HUDCanvas.alpha = 0;
       });
 
+    if (m_launchPrepareSplash != null)
+    { 
+     Destroy(m_launchPrepareSplash.gameObject);
+    }
+    
     if (m_transitionSplash == null)
     { 
       m_transitionSplash = Instantiate(TransitionSplash, HUDCanvas.transform);
@@ -219,6 +227,12 @@ public class UIHandler : MonoBehaviour
 
   private void OnLevelPassed(LevelPassed context)
   {
+    if (m_launchPrepareSplash == null)
+    { 
+      m_launchPrepareSplash = Instantiate(LaunchPrepareSplash, HUDCanvas.transform);
+      m_launchPrepareSplash.GetComponent<Animator>().SetTrigger("Blink");
+    }
+    
     foreach (var prompt in BeatPrompts)
     {
       Destroy(prompt.gameObject);
