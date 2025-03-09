@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Events;
 using SGS29.Utilities;
-using UnityEngine;
 
 public class TrackResetEvent : IEvent
 {
@@ -80,10 +79,10 @@ namespace Gameplay
             var duration = trackDefinition.Actions.Count / rate;
             
             //Seconds of deadzone as a portion of the duration
-            var deadZone = duration-active;
+            var deadZone = 1.5f;
             
             //The actual active duration that we're working with that sits in the middle of the deadzones
-            float activeDuration = duration - (deadZone);
+            float activeDuration = duration - (2 * deadZone);
            
             //Figure out the remaining interval that we will spawn into
             float interval = activeDuration /(trackDefinition.Actions.Count-1) ;
@@ -96,10 +95,6 @@ namespace Gameplay
                 Beat.States.Upcoming,
                 i
             ));
-            foreach (var beat in actions)
-            {
-                // Debug.Log($"Beat: {beat.Action} {beat.StartTime}-{beat.EndTime}");
-            }
 
             return new PlayableTrack(actions.ToList(), duration);
         }
@@ -125,6 +120,7 @@ namespace Gameplay
 
         public enum States
         {
+            NotPlaying,
             Playing,
             Failed,
             Passed,

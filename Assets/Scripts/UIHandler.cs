@@ -62,6 +62,8 @@ public class UIHandler : MonoBehaviour
     
     SM.Instance<EventManager>().RegisterListener<GameManager.TransitionStarted>(OnTransitionStarted);
     
+    SM.Instance<EventManager>().RegisterListener<GameManager.TransitionEnded>(OnTransitionEnded);
+    
     SM.Instance<EventManager>().RegisterListener<MainMenu>(OnMainMenu);
   }
 
@@ -73,7 +75,7 @@ public class UIHandler : MonoBehaviour
     
     SM.Instance<EventManager>().UnregisterListener<LevelPassed>(OnLevelPassed);
     
-    SM.Instance<EventManager>().RegisterListener<GameOver>(OnGameOver);
+    SM.Instance<EventManager>().UnregisterListener<GameOver>(OnGameOver);
     
     SM.Instance<EventManager>().UnregisterListener<TrackStarted>(OnTrackStarted);
     
@@ -83,7 +85,9 @@ public class UIHandler : MonoBehaviour
     
     SM.Instance<EventManager>().UnregisterListener<GameManager.TransitionStarted>(OnTransitionStarted);
     
-    SM.Instance<EventManager>().RegisterListener<MainMenu>(OnMainMenu);
+    SM.Instance<EventManager>().UnregisterListener<GameManager.TransitionEnded>(OnTransitionEnded);
+
+    SM.Instance<EventManager>().UnregisterListener<MainMenu>(OnMainMenu);
   }
 
   private void OnMainMenu(MainMenu context)
@@ -95,6 +99,7 @@ public class UIHandler : MonoBehaviour
     }
     
     HUDCanvas.alpha = 0;
+    
     
   }
 
@@ -114,6 +119,14 @@ public class UIHandler : MonoBehaviour
     { 
       m_transitionSplash = Instantiate(TransitionSplash, HUDCanvas.transform);
       m_transitionSplash.GetComponent<Animator>().SetTrigger("Blink");
+    }
+  }
+  
+  private void OnTransitionEnded(GameManager.TransitionEnded obj)
+  {
+    foreach (var prompt in BeatPrompts)
+    {
+      prompt.CanvasGroup.alpha = 0;
     }
   }
   
