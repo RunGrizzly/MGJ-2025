@@ -26,7 +26,7 @@ public class UIHandler : MonoBehaviour
   public Canvas HUDCanvas = null;
   
   public BeatPrompt BeatPromptTemplate;
-  private List<BeatPrompt> BeatPrompts = new List<BeatPrompt>();
+  public List<BeatPrompt> BeatPrompts = new List<BeatPrompt>();
 
   public BeatActionSpriteDictionary ActionSprites = new BeatActionSpriteDictionary();
 
@@ -46,6 +46,8 @@ public class UIHandler : MonoBehaviour
     
     SM.Instance<EventManager>().RegisterListener<TrackFailed>(OnTrackStarted);
     SM.Instance<EventManager>().RegisterListener<TrackFailed>(OnTrackFailed);
+    
+    SM.Instance<EventManager>().RegisterListener<TrackResetEvent>(OnTrackReset);
   }
 
   private void OnTrackStarted(TrackFailed context)
@@ -69,6 +71,12 @@ public class UIHandler : MonoBehaviour
       AttemptPips[i].gameObject.SetActive(false);
     }
     
+    foreach (var prompt in BeatPrompts)
+    {
+      prompt.PromptImageA.color = Color.black;
+      prompt.PromptImageB.color = Color.black;
+    }
+    
     Debug.LogWarningFormat($"Track was failed even after running out of attempts");
   }
 
@@ -81,10 +89,17 @@ public class UIHandler : MonoBehaviour
     
     SM.Instance<EventManager>().UnregisterListener<TrackFailed>(OnTrackStarted);
     SM.Instance<EventManager>().UnregisterListener<TrackFailed>(OnTrackFailed);
+    
+    SM.Instance<EventManager>().UnregisterListener<TrackResetEvent>(OnTrackReset);
   }
 
-  private void OnTrackFailed()
+  private void OnTrackReset(TrackResetEvent context)
   {
+      foreach (var prompt in BeatPrompts)
+      {
+        prompt.PromptImageA.color = Color.white;
+        prompt.PromptImageB.color = Color.white;
+      }
     
   }
 

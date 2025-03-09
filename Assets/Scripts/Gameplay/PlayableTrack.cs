@@ -1,6 +1,12 @@
 #nullable enable
 using System.Collections.Generic;
 using System.Linq;
+using Events;
+using SGS29.Utilities;
+
+public class TrackResetEvent : IEvent
+{
+}
 
 namespace Gameplay
 {
@@ -37,6 +43,8 @@ namespace Gameplay
             {
                 beat.SetState(Beat.States.Upcoming);
             }
+            
+            SM.Instance<EventManager>().DispatchEvent(new TrackResetEvent());
         }
 
         private Beat? GetCurrentBeat()
