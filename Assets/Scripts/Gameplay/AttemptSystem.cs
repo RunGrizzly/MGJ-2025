@@ -1,14 +1,14 @@
 using Events;
 using SGS29.Utilities;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Gameplay
 {
     public class AttemptSystem : MonoBehaviour
     {
         [SerializeField] private int _maxAttempts = 3;
-        [SerializeField] private int _currentAttempt = 0;
+        public int _remainingAttempts = 3;
+        
         private PlayableTrack _playableTrack;
         private EventManager _eventManager;
 
@@ -28,15 +28,17 @@ namespace Gameplay
         private void OnTrackStarted(TrackEvents.TrackStarted evt)
         {
             _playableTrack = evt.Track;
-            _currentAttempt = 0;
+            _remainingAttempts = _maxAttempts;
         }
 
         private void OnTrackFailed(TrackEvents.TrackFailed evt)
         {
-            _currentAttempt++;
-            Debug.Log($"Attempt failed, Remaining attempts: {_maxAttempts - _currentAttempt}");
+            _remainingAttempts--;
+            Debug.Log($"Attempt failed, Remaining attempts: {_remainingAttempts}");
             _playableTrack.Reset();
-            if (_currentAttempt >= _maxAttempts)
+            
+            
+            if (_remainingAttempts == 0)
             {
                 _eventManager.DispatchEvent(new GameOver());
             }
