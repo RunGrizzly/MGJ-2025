@@ -37,8 +37,6 @@ namespace Gameplay
             {
                 beat.SetState(Beat.States.Upcoming);
             }
-
-            State = States.Playing;
         }
 
         private Beat? GetCurrentBeat()

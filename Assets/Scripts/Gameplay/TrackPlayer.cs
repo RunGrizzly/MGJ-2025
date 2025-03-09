@@ -52,10 +52,13 @@ namespace Gameplay
                     break;
                 case { State: Beat.States.InProgress }:
                     _currentTrack.CurrentBeat.SetState(Beat.States.Failed);
+                    _currentTrack.SetState(PlayableTrack.States.Failed);
+                    _eventManager.DispatchEvent(new TrackFailed(_currentTrack));
                     Debug.Log("Tried to hit the wrong beat");
                     break;
                 case null:
                     _currentTrack.SetState(PlayableTrack.States.Failed);
+                    _eventManager.DispatchEvent(new TrackFailed(_currentTrack));
                     Debug.Log("Tried to hit a beat, but no beat");
                     break;
             }
@@ -100,6 +103,7 @@ namespace Gameplay
             if (_progress >= _currentTrack.Duration)
             {
                 _currentTrack.Reset();
+                _currentTrack.SetState(PlayableTrack.States.Playing);
             }
         }
 
