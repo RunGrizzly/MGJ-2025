@@ -127,6 +127,8 @@ public class GameManager : MonoBehaviour
                 _splineAnimate.Completed += StartNextLevel;
 
                 _currentState = GameplayState.Transitioning;
+                
+                _levels.Add(_levelGenerator.Generate(_levels.Count));
                 break;
             default:
                 return;
