@@ -76,7 +76,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""name"": ""Jump"",
                     ""type"": ""Button"",
                     ""id"": ""f1ba0d36-48eb-4cd5-b651-1c94a6531f70"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -103,7 +103,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""name"": ""Sprint"",
                     ""type"": ""Button"",
                     ""id"": ""641cd816-40e6-41b4-8c3d-04687c349290"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -1061,6 +1061,15 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Reset"",
+                    ""type"": ""Button"",
+                    ""id"": ""1eb30842-8fdc-4c4e-8535-b9b89b306ff3"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -1173,6 +1182,28 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""action"": ""Transfer"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8267abda-7d94-4fa8-b2c9-6697f5f32141"",
+                    ""path"": ""<Gamepad>/start"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Reset"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a587757a-1dc7-40b7-b58f-b1efd4440751"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Reset"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -1270,6 +1301,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         m_Ship_Action3 = m_Ship.FindAction("Action3", throwIfNotFound: true);
         m_Ship_Action4 = m_Ship.FindAction("Action4", throwIfNotFound: true);
         m_Ship_Transfer = m_Ship.FindAction("Transfer", throwIfNotFound: true);
+        m_Ship_Reset = m_Ship.FindAction("Reset", throwIfNotFound: true);
     }
 
     ~@InputSystem_Actions()
@@ -1571,6 +1603,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Ship_Action3;
     private readonly InputAction m_Ship_Action4;
     private readonly InputAction m_Ship_Transfer;
+    private readonly InputAction m_Ship_Reset;
     public struct ShipActions
     {
         private @InputSystem_Actions m_Wrapper;
@@ -1580,6 +1613,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         public InputAction @Action3 => m_Wrapper.m_Ship_Action3;
         public InputAction @Action4 => m_Wrapper.m_Ship_Action4;
         public InputAction @Transfer => m_Wrapper.m_Ship_Transfer;
+        public InputAction @Reset => m_Wrapper.m_Ship_Reset;
         public InputActionMap Get() { return m_Wrapper.m_Ship; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1604,6 +1638,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @Transfer.started += instance.OnTransfer;
             @Transfer.performed += instance.OnTransfer;
             @Transfer.canceled += instance.OnTransfer;
+            @Reset.started += instance.OnReset;
+            @Reset.performed += instance.OnReset;
+            @Reset.canceled += instance.OnReset;
         }
 
         private void UnregisterCallbacks(IShipActions instance)
@@ -1623,6 +1660,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @Transfer.started -= instance.OnTransfer;
             @Transfer.performed -= instance.OnTransfer;
             @Transfer.canceled -= instance.OnTransfer;
+            @Reset.started -= instance.OnReset;
+            @Reset.performed -= instance.OnReset;
+            @Reset.canceled -= instance.OnReset;
         }
 
         public void RemoveCallbacks(IShipActions instance)
@@ -1717,5 +1757,6 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         void OnAction3(InputAction.CallbackContext context);
         void OnAction4(InputAction.CallbackContext context);
         void OnTransfer(InputAction.CallbackContext context);
+        void OnReset(InputAction.CallbackContext context);
     }
 }

@@ -3,6 +3,7 @@ using Events;
 using SGS29.Utilities;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class GameStateManager : MonoSingleton<GameStateManager>
 {
@@ -32,10 +33,18 @@ public class GameStateManager : MonoSingleton<GameStateManager>
         _actions = new InputSystem_Actions();
         _actions.Ship.Transfer.Enable();
         _actions.Ship.Transfer.performed += OnAction;
+        _actions.Ship.Reset.Enable();
+        _actions.Ship.Reset.performed += ResetGame;
         
         currentState = GameState.MainMenu;
         
         SM.Instance<EventManager>().DispatchEvent(new MainMenu());
+    }
+
+    private void ResetGame(InputAction.CallbackContext _)
+    {
+        _actions.Ship.Reset.performed -= ResetGame;
+        SceneManager.LoadSceneAsync(0, LoadSceneMode.Single);
     }
     
     private void ChangeState()
