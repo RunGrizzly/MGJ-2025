@@ -18,6 +18,8 @@ namespace Gameplay
         public TrackDefinition Generate(int segmentCount, int possibleActions)
         {
             var actions = Enumerable.Range(0, 16).Select(_ => (BeatAction)Random.Range(0, possibleActions + 1));
+            
+            
             return new TrackDefinition() { Actions = actions.ToList() };
         }
     }
