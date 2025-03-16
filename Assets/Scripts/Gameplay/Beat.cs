@@ -1,26 +1,28 @@
 #nullable enable
 
+using System;
 using Events;
 using SGS29.Utilities;
 using UnityEngine;
 
 namespace Gameplay
 {
+    [Serializable]
     public class Beat
     {
-        public int Index { get; }
-        public BeatAction Action { get; }
-        public float StartTime { get; }
-        public float EndTime { get; }
-        public States State { get; private set; }
-
-        public Beat(BeatAction action, float startTime, float endTime, States state, int index)
+        public int Index;
+        public BeatAction Action;
+        public float NormalisedTime;
+        public float TimeBuffer;
+        public States State;
+        
+        
+        public Beat(BeatAction action, float normalisedTime, float timeBuffer, States state, int index)
         {
             Action = action;
-            StartTime = startTime;
-            EndTime = endTime;
+            NormalisedTime = normalisedTime;
+            TimeBuffer = timeBuffer;
             State = state;
-            Index = index;
         }
 
         public enum States
@@ -35,11 +37,7 @@ namespace Gameplay
         public void SetState(States state)
         {
             State = state;
-
             if (state == States.Upcoming) return;
-
-            var beatEvent = new BeatAttemptEvent(this);
-            SM.Instance<EventManager>().DispatchEvent(beatEvent);
         }
     }
 

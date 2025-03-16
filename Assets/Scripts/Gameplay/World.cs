@@ -5,9 +5,9 @@ namespace Gameplay
 {
     public class World : MonoBehaviour
     {
-        public float Radius { get; private set; }
-        public Vector3 Position { get; private set; }
-        public Orbit Orbit { get; private set; }
+        // /public float Radius { get; private set; }
+        //public Vector3 Position { get; private set; }
+        public Orbit Orbit;
         
         public Vector3 rotateAxis = Vector3.up;
         public float rotateSpeed = 1f;
@@ -18,16 +18,14 @@ namespace Gameplay
         
         public List<Texture2D> SurfaceMasks = new List<Texture2D>();
         
-        public void Init(float radius, Vector3 position)
+        public void Init(float radius, Vector3 position, float radiusFactor = 1.2f)
         {
-            Radius = radius;
-            Position = position;
-
             transform.position = position;
             transform.localScale = Vector3.one * radius;
 
-            Orbit = new Orbit(transform, Vector3.zero, 1.2f, transform.up);
+            Orbit = new Orbit(transform, Vector3.zero, radius*radiusFactor, transform.up);
 
+            //Get random rotations
             rotateAxis = new Vector3(Random.Range(0.2f, 1), Random.Range(0.2f, 1f), Random.Range(0.2f, 1f)).normalized;
             rotateSpeed = Random.Range(0.01f, 0.095f);
             

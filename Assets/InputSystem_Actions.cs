@@ -1054,7 +1054,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Transfer"",
+                    ""name"": ""Progress"",
                     ""type"": ""Button"",
                     ""id"": ""c584c9e8-8f5d-4196-b8a9-14173240da54"",
                     ""expectedControlType"": """",
@@ -1157,7 +1157,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Transfer"",
+                    ""action"": ""Progress"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -1168,7 +1168,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Transfer"",
+                    ""action"": ""Progress"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -1179,7 +1179,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Transfer"",
+                    ""action"": ""Progress"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -1300,7 +1300,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         m_Ship_Action2 = m_Ship.FindAction("Action2", throwIfNotFound: true);
         m_Ship_Action3 = m_Ship.FindAction("Action3", throwIfNotFound: true);
         m_Ship_Action4 = m_Ship.FindAction("Action4", throwIfNotFound: true);
-        m_Ship_Transfer = m_Ship.FindAction("Transfer", throwIfNotFound: true);
+        m_Ship_Progress = m_Ship.FindAction("Progress", throwIfNotFound: true);
         m_Ship_Reset = m_Ship.FindAction("Reset", throwIfNotFound: true);
     }
 
@@ -1602,7 +1602,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Ship_Action2;
     private readonly InputAction m_Ship_Action3;
     private readonly InputAction m_Ship_Action4;
-    private readonly InputAction m_Ship_Transfer;
+    private readonly InputAction m_Ship_Progress;
     private readonly InputAction m_Ship_Reset;
     public struct ShipActions
     {
@@ -1612,7 +1612,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         public InputAction @Action2 => m_Wrapper.m_Ship_Action2;
         public InputAction @Action3 => m_Wrapper.m_Ship_Action3;
         public InputAction @Action4 => m_Wrapper.m_Ship_Action4;
-        public InputAction @Transfer => m_Wrapper.m_Ship_Transfer;
+        public InputAction @Progress => m_Wrapper.m_Ship_Progress;
         public InputAction @Reset => m_Wrapper.m_Ship_Reset;
         public InputActionMap Get() { return m_Wrapper.m_Ship; }
         public void Enable() { Get().Enable(); }
@@ -1635,9 +1635,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @Action4.started += instance.OnAction4;
             @Action4.performed += instance.OnAction4;
             @Action4.canceled += instance.OnAction4;
-            @Transfer.started += instance.OnTransfer;
-            @Transfer.performed += instance.OnTransfer;
-            @Transfer.canceled += instance.OnTransfer;
+            @Progress.started += instance.OnProgress;
+            @Progress.performed += instance.OnProgress;
+            @Progress.canceled += instance.OnProgress;
             @Reset.started += instance.OnReset;
             @Reset.performed += instance.OnReset;
             @Reset.canceled += instance.OnReset;
@@ -1657,9 +1657,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @Action4.started -= instance.OnAction4;
             @Action4.performed -= instance.OnAction4;
             @Action4.canceled -= instance.OnAction4;
-            @Transfer.started -= instance.OnTransfer;
-            @Transfer.performed -= instance.OnTransfer;
-            @Transfer.canceled -= instance.OnTransfer;
+            @Progress.started -= instance.OnProgress;
+            @Progress.performed -= instance.OnProgress;
+            @Progress.canceled -= instance.OnProgress;
             @Reset.started -= instance.OnReset;
             @Reset.performed -= instance.OnReset;
             @Reset.canceled -= instance.OnReset;
@@ -1756,7 +1756,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         void OnAction2(InputAction.CallbackContext context);
         void OnAction3(InputAction.CallbackContext context);
         void OnAction4(InputAction.CallbackContext context);
-        void OnTransfer(InputAction.CallbackContext context);
+        void OnProgress(InputAction.CallbackContext context);
         void OnReset(InputAction.CallbackContext context);
     }
 }

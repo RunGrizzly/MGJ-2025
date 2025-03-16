@@ -248,7 +248,6 @@ GameObject:
   m_Component:
   - component: {fileID: 269610145}
   - component: {fileID: 269610144}
-  - component: {fileID: 269610146}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -268,11 +267,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6722e3ccd1189b49a94a9be03017f94, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _trackGenerator: {fileID: 2123548213}
   _trackPlayer: {fileID: 1616786874}
-  _levelGenerator: {fileID: 1938607272}
-  _shipPrefab: {fileID: 5116134188606206880, guid: 9523bfc1d2f25944592efa6f5bdd22cd, type: 3}
-  _container: {fileID: 0}
+  TrackDefinitions:
+  - ID: 0
+    ActiveDuration: 4
+    DeadDuration: 8
+    BeatResolution: 64
+    ActiveBeatRange: 0.25
+    Buffer: 0.2
+    ValidActions: 
+  _eventManager: {fileID: 385735844}
+  UIHandler: {fileID: 1694864323}
+  TrackGenerator: {fileID: 2123548213}
+  CurrentGameState: 0
+  _shipTemplate: {fileID: 5497760847338596634, guid: 9523bfc1d2f25944592efa6f5bdd22cd, type: 3}
+  _playerShip: {fileID: 0}
+  RunStagerTemplate: {fileID: 8593445295681129820, guid: ee7a598774aba184ea1e6f4d68a2191c, type: 3}
+  Runs: []
 --- !u!4 &269610145
 Transform:
   m_ObjectHideFlags: 0
@@ -288,20 +299,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 2132586056}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &269610146
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 269610143}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 162171091cf81f74ebb4d8c2ec7bc8fa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _maxAttempts: 3
-  _remainingAttempts: 3
 --- !u!1 &304552934
 GameObject:
   m_ObjectHideFlags: 0
@@ -349,7 +346,7 @@ AudioSource:
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
-  Loop: 0
+  Loop: 1
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
@@ -889,7 +886,7 @@ AudioSource:
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
-  Loop: 0
+  Loop: 1
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
@@ -1059,7 +1056,7 @@ Transform:
   m_GameObject: {fileID: 1298735417}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0.17106937, w: 0.985259}
-  m_LocalPosition: {x: 0.6, y: 0.66, z: -37.8}
+  m_LocalPosition: {x: 0.5538877, y: 0.38, z: -37.84}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1245,9 +1242,35 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40cba81db7904c91b5c27bbc85bfbb9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _reactionWindow: 1.2
-  _rate: 1
+  ActiveTrack:
+    Beats: []
+    ActiveDefinition:
+      ID: 0
+      ActiveDuration: 0
+      DeadDuration: 0
+      BeatResolution: 0
+      ActiveBeatRange: 0
+      Buffer: 0
+      ValidActions: 
+    World: {fileID: 0}
+    IsValid: 0
+    Passed: 0
   _progress: 0
+  speedchangefactor: 5
+  _playerShip: {fileID: 0}
+  ExitTrack:
+    Beats: []
+    ActiveDefinition:
+      ID: 0
+      ActiveDuration: 0
+      DeadDuration: 0
+      BeatResolution: 0
+      ActiveBeatRange: 0
+      Buffer: 0
+      ValidActions: 
+    World: {fileID: 0}
+    IsValid: 0
+    Passed: 0
 --- !u!4 &1616786875
 Transform:
   m_ObjectHideFlags: 0
@@ -1367,7 +1390,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c2df10f94ee7f2418c453d2ac1334a8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentState: 0
 --- !u!4 &1665568662
 Transform:
   m_ObjectHideFlags: 0
@@ -1581,7 +1603,6 @@ MonoBehaviour:
   - {fileID: 1401969676}
   - {fileID: 249721826}
   - {fileID: 1634920779}
-  AttemptSystem: {fileID: 269610146}
   ClearedDisplay: {fileID: 2122515445}
 --- !u!114 &1694864324
 MonoBehaviour:
@@ -1640,6 +1661,8 @@ GameObject:
   - component: {fileID: 1730487577}
   - component: {fileID: 1730487579}
   - component: {fileID: 1730487578}
+  - component: {fileID: 1730487581}
+  - component: {fileID: 1730487580}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -1765,6 +1788,40 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1730487576}
   m_CullTransparentMesh: 1
+--- !u!95 &1730487580
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1730487576}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 4ad9b1a91d65ef44ca7dc2acd6fd6733, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!225 &1730487581
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1730487576}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &1771355380
 GameObject:
   m_ObjectHideFlags: 0
@@ -1953,31 +2010,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1938607273}
-  - component: {fileID: 1938607272}
+  - component: {fileID: 1938607274}
   m_Layer: 0
-  m_Name: LevelGenerator
+  m_Name: WorldGenerator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1938607272
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1938607271}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f98c04e05335410aa9b2b20f288de783, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _worldPrefab: {fileID: 4528948803247901497, guid: 1dfb26995906e6a4fa14fe3e24b1da06, type: 3}
-  _worldDistance: 10000
-  _spawnAngle: 0
-  _trackGenerator: {fileID: 2123548213}
-  _difficultySettings: {fileID: 11400000, guid: 73646f8be1cdc2c43b177c7d3d0a724f, type: 2}
 --- !u!4 &1938607273
 Transform:
   m_ObjectHideFlags: 0
@@ -1993,6 +2033,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 723559851}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1938607274
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1938607271}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f11d15689064a9c45a61aed4de2a6c96, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  WorldTemplate: {fileID: 4528948803247901497, guid: 1dfb26995906e6a4fa14fe3e24b1da06, type: 3}
+  _worldDistance: 200
 --- !u!1 &2122515443
 GameObject:
   m_ObjectHideFlags: 0
@@ -2158,6 +2212,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 239445aa89f145febf871e108112ca2c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ActiveDurationGamut: {x: 4, y: 8}
+  DeadDurationGamut: {x: 4, y: 4}
+  BeatResolutionGamut: {x: 64, y: 256}
+  ActiveBeatRangeGamut: {x: 0.1, y: 0.5}
 --- !u!4 &2123548214
 Transform:
   m_ObjectHideFlags: 0

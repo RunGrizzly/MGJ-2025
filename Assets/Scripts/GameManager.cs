@@ -1,216 +1,105 @@
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using Events;
 using Gameplay;
-using Gameplay.TrackEvents;
 using SGS29.Utilities;
+using TrackEvents;
 using UnityEngine;
-using UnityEngine.Splines;
 
-// [ExecuteAlways]
+public enum GameState
+{
+    InHangar,
+    Transitioning,
+    OnTrack,
+    OnExitTrack,
+    Dead
+}
+
 public class GameManager : MonoBehaviour
 {
-    [SerializeField] private TrackGenerator _trackGenerator;
-    [SerializeField] private TrackPlayer _trackPlayer;
-    [SerializeField] private LevelGenerator _levelGenerator;
-    [SerializeField] private Transform _shipPrefab;
-    public SplineContainer _container;
-    private EventManager _eventManager;
-    private TrackDefinition _trackDefinition;
-    private GameplayState _currentState = GameplayState.InHangar;
-    private List<Level> _levels;
-    private float _progress;
-    private Level _currentLevel;
-    private Transform _playerShip;
-    private SplineAnimate _splineAnimate;
+    public static GameManager ins = null;
 
-    enum GameplayState
+    public TrackPlayer _trackPlayer;
+
+    //Our list of definitions that will be turned into tracks
+    public List<TrackDefinition> TrackDefinitions = new List<TrackDefinition>();
+
+    public InputSystem_Actions _actions;
+    
+    public EventManager _eventManager;
+    public UIHandler UIHandler;
+    public TrackGenerator TrackGenerator;
+    
+    public GameState CurrentGameState = GameState.InHangar;
+
+    [SerializeField] private GameObject _shipTemplate;
+
+    public Transform _playerShip = null;
+
+    public RunStager RunStagerTemplate = null;
+    private RunStager _activeRunStager = null;
+    public List<Run> Runs = new List<Run>();
+    
+    private void Awake()
     {
-        InHangar,
-        Transitioning,
-        OnTrack,
-        OnExitTrack,
-        Dead
+        ins = this;
     }
-
-
-    //GAME MANAGER NOW GIZMOS OUT THE LEVEL NORMALISED POSITIONS
-    private void OnDrawGizmos()
-    {
-        if (_currentLevel == null)
-        {
-            return;
-        }
-
-        if (_trackPlayer._currentTrack == null)
-        {
-            return;
-        }
-
-        Orbit newOrbit = _currentLevel.World.Orbit;
-
-        foreach (var beat in _trackPlayer._currentTrack.GetNormalizedBeatTimes())
-        {
-            if (beat.Key.Action == BeatAction.Empty)
-            {
-                Gizmos.color = Color.gray;
-            }
-
-            else if (beat.Key.Action == BeatAction.Transfer)
-            {
-                Gizmos.color = Color.cyan;
-            }
-
-            else
-            {
-                Gizmos.color = Color.green;
-            }
-
-            Gizmos.DrawSphere(OrbitHelpers.OrbitPointFromNormalisedPosition(newOrbit, beat.Value), 40f);
-
-            // Gizmos.DrawSphere(OrbitHelpers.OrbitPointFromNormalisedPosition(newOrbit, beat.Key.StartTime/_currentLevel.Track.Duration),20f);
-            // Gizmos.DrawSphere(OrbitHelpers.OrbitPointFromNormalisedPosition(newOrbit,  beat.Key.EndTime/_currentLevel.Track.Duration),20f);
-
-
-            Gizmos.color = Color.red;
-
-            var currentBeat = _trackPlayer._currentTrack.GetCurrentBeat();
-            if (currentBeat != null)
-            {
-                Gizmos.DrawWireSphere(
-                    OrbitHelpers.OrbitPointFromNormalisedPosition(newOrbit,
-                        ((currentBeat.StartTime + currentBeat.EndTime) / 2) / _trackPlayer._currentTrack.Duration),
-                    60f);
-            }
-
-            Gizmos.color = Color.yellow;
-
-            Gizmos.DrawSphere(
-                OrbitHelpers.OrbitPointFromNormalisedPosition(newOrbit,
-                    _trackPlayer._progress / _trackPlayer._currentTrack.Duration), 60f);
-        }
-    }
-
-
+    
     public void OnEnable()
     {
-        _playerShip = Instantiate(_shipPrefab);
-
+        //Events
         _eventManager = SM.Instance<EventManager>();
-        _eventManager.RegisterListener<TrackStarted>(evt => Debug.Log("Track started"));
-        _eventManager.RegisterListener<GameStarted>(OnGameStarted);
-        _eventManager.RegisterListener<GameOver>(evt => OnGameOver());
-        _eventManager.RegisterListener<TrackPassed>(evt => TrackPassed());
-        _eventManager.RegisterListener<GameOver>(evt => Debug.Log("GAME OVER LOSER"));
-
-        _container = FindAnyObjectByType<SplineContainer>();
-        _splineAnimate = _playerShip.GetComponent<SplineAnimate>();
+        _eventManager.RegisterListener<RunEnded>( OnRunEnded);
+        _eventManager.RegisterListener<RunStarted>(OnRunStarted);
+        //_eventManager.RegisterListener<TrackPassed>(OnTrackPassed);
+     
+        //Inputs
+        _actions = new InputSystem_Actions();
+        
+        //Here we will spawn a new run stager
+        StageNewRun();
     }
 
-    public void Start()
-    {
-        _levels = Enumerable.Range(0, 5).Select(_levelGenerator.Generate).ToList();
-    }
+    // private void OnTrackPassed(TrackPassed context)
+    // {
+    //     // Runs[0].TracksComplete += 1;
+    //     // Runs[0].Difficulty += Runs[0].DifficultyRamp;
+    //     // _eventManager.DispatchEvent(new RunUpdate(Runs[0]));
+    // }
 
-    private void OnGameStarted(GameStarted evt)
+    private void StageNewRun()
     {
-        StartNextLevel();
-    }
-
-    private void StartNextLevel()
-    {
-        _progress = 0f;
-        _currentLevel = _currentLevel == null ? _levels.First() : _levels[_currentLevel.Number + 1];
-        SM.Instance<EventManager>().DispatchEvent(new NewLevel(_currentLevel));
-        _trackPlayer.Play(_currentLevel.Track);
-        _currentState = GameplayState.OnTrack;
-        _splineAnimate.Completed -= OnTransitionEnded;
-        _splineAnimate?.Container?.KnotLinkCollection.Clear();
-    }
-
-    private void Update()
-    {
-        if (_currentState is not (GameplayState.OnTrack or GameplayState.OnExitTrack))
+        if (_activeRunStager != null)
         {
-            return;
+            Destroy(_activeRunStager.gameObject);
         }
-
-        _progress += Time.deltaTime;
-        _trackPlayer.Tick(_progress);
-        _playerShip.position = OrbitHelpers.OrbitPointFromNormalisedPosition(_currentLevel.World.Orbit,
-            _progress / _currentLevel.Track.Duration);
-
-        _playerShip.rotation = OrbitHelpers.ForwardRotationFromNormalisePosition(_currentLevel.World.Orbit,
-            _progress / _currentLevel.Track.Duration);
-
-        if (_trackPlayer._currentTrack.State == PlayableTrack.States.Playing)
-        {
-            _progress = Mathf.Repeat(_progress, _trackPlayer._currentTrack.Duration);
-        }
+        
+        //Spawn a new run stager into the HUD canvas
+        //This will do all the transient prep work for staging a new run
+        _activeRunStager = Instantiate(RunStagerTemplate,UIHandler.HUDCanvas.transform);
     }
-
-    private void TrackPassed()
+    
+    private void OnRunStarted(RunStarted context)
     {
-        switch (_currentState)
-        {
-            case GameplayState.OnTrack:
-                _currentState = GameplayState.OnExitTrack;
-                _trackPlayer.Play(_currentLevel.ExitTrack);
-                _trackPlayer.Tick(_progress);
-                _eventManager.DispatchEvent(new LevelPassed(_currentLevel));
-                break;
-            case GameplayState.OnExitTrack:
-                var pos1 = OrbitHelpers.OrbitPointFromNormalisedPosition(_currentLevel.World.Orbit, 0.75f);
-                var pos3 = OrbitHelpers.OrbitPointFromNormalisedPosition(_levels[_currentLevel.Number + 1].World.Orbit,
-                    0.5f);
-                var pos2 = new Vector3((pos1.x + pos3.x) / 2, 0, -2500f);
-
-                var knot1 = new BezierKnot(pos1, 0f, 1000f);
-                var knot3 = new BezierKnot(pos3, 0f, 750f);
-                var spline = new Spline();
-                spline.Add(knot1, TangentMode.Mirrored);
-                spline.Add(pos2);
-                spline.Add(knot3, TangentMode.Mirrored);
-
-
-                _container.Spline = spline;
-                _splineAnimate.Container = _container;
-
-                _splineAnimate.Duration = 7.5f;
-                _splineAnimate.Loop = SplineAnimate.LoopMode.Once;
-                _splineAnimate.ElapsedTime = 0f;
-                _splineAnimate.Play();
-                _splineAnimate.Completed += OnTransitionEnded;
-
-                _currentState = GameplayState.Transitioning;
-
-                _levels.Add(_levelGenerator.Generate(_levels.Count));
-                SM.Instance<EventManager>().DispatchEvent(new TransitionStarted());
-                break;
-            default:
-                return;
-        }
+        Runs.Insert(0,context.Run);
     }
-
-    private void OnTransitionEnded()
+    
+    private void OnRunEnded(RunEnded context)
     {
-        StartNextLevel();
-        _trackPlayer._currentTrack.SetState(PlayableTrack.States.NotPlaying);
-        _progress = 0.5f * _trackPlayer._currentTrack.Duration;
-        Update();
-        SM.Instance<EventManager>().DispatchEvent(new TransitionEnded());
-    }
-
-    private void OnGameOver()
-    {
-        _currentState = GameplayState.Dead;
-    }
-
-    public class TransitionStarted : IEvent
-    {
-    }
-
-    public class TransitionEnded : IEvent
-    {
+        //Maybe we want to go to a summary screen or something?
+       StageNewRun();
     }
 }
+
+    [Serializable]
+    public struct Range
+    {
+        public float Min;
+        public float Max;
+
+        public Range(float min, float max)
+        {
+            Min = min;
+            Max = max;
+        }
+    }

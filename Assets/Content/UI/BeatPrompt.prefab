@@ -177,7 +177,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7489617987380638600}
-  m_LocalRotation: {x: -0, y: -0.13123375, z: -0, w: 0.9913515}
+  m_LocalRotation: {x: 0.0050202804, y: -0.007318133, z: 0.00003674052, w: 0.99996066}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -189,7 +189,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 40, y: 40}
+  m_SizeDelta: {x: 2, y: 2}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &597183617970045796
 Canvas:
@@ -238,6 +238,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e834ea42856429dbd735d7501ea69f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Beat:
+    Index: 0
+    Action: 0
+    NormalisedTime: 0
+    TimeBuffer: 0
+    State: 0
   PromptImageA: {fileID: 7164051975443228461}
   PromptImageB: {fileID: 2923346170680792986}
   CanvasGroup: {fileID: 2354509463216567638}

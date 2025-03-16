@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using Events;
 using Gameplay;
-using Gameplay.TrackEvents;
 using SGS29.Utilities;
 using UnityEngine;
 using RotaryHeart.Lib.SerializableDictionary;
 using TMPro;
+using TrackEvents;
 using UnityEngine.UI;
 
 [System.Serializable]
@@ -44,20 +44,16 @@ public class UIHandler : MonoBehaviour
   public BeatStateGameObjectDictionary AttemptSplashes = new BeatStateGameObjectDictionary();
 
   public List<Image> AttemptPips = new List<Image>();
-
-  public AttemptSystem AttemptSystem = null;
-
+  
   public TextMeshProUGUI ClearedDisplay = null;
   
   private void OnEnable()
   {
-    SM.Instance<EventManager>().RegisterListener<NewLevel>(OnNewLevel);
-    
     SM.Instance<EventManager>().RegisterListener<BeatAttemptEvent>(OnBeatAttempt);
     
-    SM.Instance<EventManager>().RegisterListener<LevelPassed>(OnLevelPassed);
+    SM.Instance<EventManager>().RegisterListener<TrackPassed>(OnTrackPassed);
     
-    SM.Instance<EventManager>().RegisterListener<GameOver>(OnGameOver);
+    SM.Instance<EventManager>().RegisterListener<RunEnded>(OnRunEnded);
     
     SM.Instance<EventManager>().RegisterListener<TrackStarted>(OnTrackStarted);
     
@@ -65,37 +61,56 @@ public class UIHandler : MonoBehaviour
     
     SM.Instance<EventManager>().RegisterListener<TrackResetEvent>(OnTrackReset);
     
-    SM.Instance<EventManager>().RegisterListener<GameManager.TransitionStarted>(OnTransitionStarted);
+    SM.Instance<EventManager>().RegisterListener<TransitionStarted>(OnTransitionStarted);
     
-    SM.Instance<EventManager>().RegisterListener<GameManager.TransitionEnded>(OnTransitionEnded);
+    SM.Instance<EventManager>().RegisterListener<TransitionEnded>(OnTransitionEnded);
     
-    SM.Instance<EventManager>().RegisterListener<MainMenu>(OnMainMenu);
+    SM.Instance<EventManager>().RegisterListener<RunStaged>(OnRunStaged);
+    
+    SM.Instance<EventManager>().RegisterListener<RunUpdate>(OnRunUpdate);
   }
-
+  
   private void OnDisable()
   {
-    SM.Instance<EventManager>().UnregisterListener<NewLevel>(OnNewLevel);
+    SM.Instance<EventManager>().UnregisterListener<TrackResetEvent>(OnTrackReset);
     
     SM.Instance<EventManager>().UnregisterListener<BeatAttemptEvent>(OnBeatAttempt);
     
-    SM.Instance<EventManager>().UnregisterListener<LevelPassed>(OnLevelPassed);
+    SM.Instance<EventManager>().UnregisterListener<TrackPassed>(OnTrackPassed);
     
-    SM.Instance<EventManager>().UnregisterListener<GameOver>(OnGameOver);
+    SM.Instance<EventManager>().UnregisterListener<RunEnded>(OnRunEnded);
     
     SM.Instance<EventManager>().UnregisterListener<TrackStarted>(OnTrackStarted);
     
     SM.Instance<EventManager>().UnregisterListener<TrackFailed>(OnTrackFailed);
     
-    SM.Instance<EventManager>().UnregisterListener<TrackResetEvent>(OnTrackReset);
+    SM.Instance<EventManager>().UnregisterListener<TransitionStarted>(OnTransitionStarted);
     
-    SM.Instance<EventManager>().UnregisterListener<GameManager.TransitionStarted>(OnTransitionStarted);
-    
-    SM.Instance<EventManager>().UnregisterListener<GameManager.TransitionEnded>(OnTransitionEnded);
+    SM.Instance<EventManager>().UnregisterListener<TransitionEnded>(OnTransitionEnded);
 
-    SM.Instance<EventManager>().UnregisterListener<MainMenu>(OnMainMenu);
+    SM.Instance<EventManager>().UnregisterListener<RunStaged>(OnRunStaged);
+    
+    SM.Instance<EventManager>().UnregisterListener<RunUpdate>(OnRunUpdate);
+  }
+  
+  //The run was updated - sync UI info
+  private void OnRunUpdate(RunUpdate context)
+  {
+    ClearedDisplay.text = context.Run.TracksPassed.ToString();
+    
+    for (int i = 0; i < AttemptPips.Count; i++)
+    {
+      if (i < context.Run.RemainingAttempts)
+      {
+        AttemptPips[i].gameObject.SetActive(true);
+        continue;
+      }
+      
+      AttemptPips[i].gameObject.SetActive(false);
+    }
   }
 
-  private void OnMainMenu(MainMenu context)
+  private void OnRunStaged(RunStaged context)
   {
     if (m_mainMenuSplash == null)
     { 
@@ -105,10 +120,9 @@ public class UIHandler : MonoBehaviour
     
     HUDCanvas.alpha = 0;
     
-    
   }
-
-  private void OnTransitionStarted(GameManager.TransitionStarted context)
+  
+  private void OnTransitionStarted(TransitionStarted transitionStarted)
   {
     LeanTween.value(HUDCanvas.gameObject, 1, 0, 0.65f).setEase(LeanTweenType.easeInExpo)
       .setOnUpdate((val) =>
@@ -132,37 +146,8 @@ public class UIHandler : MonoBehaviour
     }
   }
   
-  private void OnTransitionEnded(GameManager.TransitionEnded obj)
+  private void OnTransitionEnded(TransitionEnded transitionEnded)
   {
-    foreach (var prompt in BeatPrompts)
-    {
-      prompt.CanvasGroup.alpha = 0;
-    }
-  }
-  
-  private void OnTrackStarted(TrackStarted context)
-  {
-    for (int i = 0; i < AttemptPips.Count; i++)
-    {
-      if (i < AttemptSystem._remainingAttempts)
-      {
-        AttemptPips[i].gameObject.SetActive(true);
-        continue;
-      }
-      
-      AttemptPips[i].gameObject.SetActive(false);
-    }
-    
-    LeanTween.value(HUDCanvas.gameObject, HUDCanvas.alpha, 1, 0.65f).setEase(LeanTweenType.easeInExpo)
-      .setOnUpdate((val) =>
-      {
-        HUDCanvas.alpha = val;
-      })
-      .setOnComplete(() =>
-      {
-        HUDCanvas.alpha = 1;
-      });
-
     if (m_transitionSplash != null)
     {
       LeanTween.value(HUDCanvas.gameObject, m_transitionSplash.alpha, 0, 0.65f).setEase(LeanTweenType.easeInExpo)
@@ -175,6 +160,40 @@ public class UIHandler : MonoBehaviour
           Destroy(m_transitionSplash.gameObject);
         });
     }
+  }
+  
+  private void OnTrackStarted(TrackStarted context)
+  {
+      foreach (var beat in context.Track.Beats)
+      {
+        if (beat.Action != BeatAction.Empty)
+        {
+          var beatPromptInstance = Instantiate(BeatPromptTemplate, null);
+          beatPromptInstance.Beat = beat;
+
+          Sprite actionSprite = null;
+
+          if (ActionSprites.TryGetValue(beat.Action, out actionSprite))
+          {
+            beatPromptInstance.FormatPrompt(true, false);
+            beatPromptInstance.PromptImageA.sprite = ActionSprites[beat.Action];
+          }
+
+          beatPromptInstance.transform.position = OrbitHelpers.OrbitPointFromNormalisedPosition(context.Track.World.Orbit, beat.NormalisedTime);
+
+          BeatPrompts.Add(beatPromptInstance);
+        }
+      }
+    
+    LeanTween.value(HUDCanvas.gameObject, HUDCanvas.alpha, 1, 0.65f).setEase(LeanTweenType.easeInExpo)
+      .setOnUpdate((val) =>
+      {
+        HUDCanvas.alpha = val;
+      })
+      .setOnComplete(() =>
+      {
+        HUDCanvas.alpha = 1;
+      });
     
     if (m_mainMenuSplash != null)
     { 
@@ -184,32 +203,23 @@ public class UIHandler : MonoBehaviour
 
   private void OnTrackFailed(TrackFailed context)
   {
-    Debug.Log("Responding to track fai;");
-    
-    for (int i = 0; i < AttemptPips.Count; i++)
-    {
-      Debug.Log("Track failed, removing a pip");
-      
-      if (i < AttemptSystem._remainingAttempts-1)
-      {
-        AttemptPips[i].gameObject.SetActive(true);
-        continue;
-      }
-      
-      AttemptPips[i].gameObject.SetActive(false);
-    }
+    Debug.Log("Responding to track fail");
+    Debug.Log("Track failed, removing a pip");
     
     foreach (var prompt in BeatPrompts)
     {
-      Debug.LogFormat($"UI:Trying to set alpha");
+      //Debug.LogFormat($"UI:Trying to set alpha");
       prompt.CanvasGroup.alpha = 0.25f;
       prompt.transform.localScale = Vector3.one * 0.25f;
     }
     
-    Debug.LogWarningFormat($"Track was failed even after running out of attempts");
+    if (m_launchPrepareSplash != null)
+    {
+      Destroy(m_launchPrepareSplash.gameObject);
+    }
   }
   
-  private void OnGameOver(GameOver context)
+  private void OnRunEnded(RunEnded context)
   {
     var gameOverSplash = Instantiate(GameOverSplash, HUDCanvas.transform);
   }
@@ -217,84 +227,82 @@ public class UIHandler : MonoBehaviour
 
   private void OnTrackReset(TrackResetEvent context)
   {
-    Debug.Log("UI:Track was reset");
+   //Delete and remake?
+   foreach (var prompt in BeatPrompts)
+   {
+     Destroy(prompt.gameObject);
+   }
+
+   BeatPrompts = new List<BeatPrompt>();
+   
+   foreach (var beat in context.Track.Beats)
+   {
+     if (beat.Action != BeatAction.Empty)
+     {
+       var beatPromptInstance = Instantiate(BeatPromptTemplate, null);
+       beatPromptInstance.Beat = beat;
+
+       Sprite actionSprite = null;
+
+       if (ActionSprites.TryGetValue(beat.Action, out actionSprite))
+       {
+         beatPromptInstance.FormatPrompt(true, false);
+         beatPromptInstance.PromptImageA.sprite = ActionSprites[beat.Action];
+       }
+
+       beatPromptInstance.transform.position = OrbitHelpers.OrbitPointFromNormalisedPosition(context.Track.World.Orbit, beat.NormalisedTime);
+
+       BeatPrompts.Add(beatPromptInstance);
+     }
+   }
+   
       foreach (var prompt in BeatPrompts)
       {
         prompt.CanvasGroup.alpha = 1f;
         prompt.transform.localScale = Vector3.one;
       }
+      
+      //Destroy wait for reset splash
+      
+      
   }
 
-  private void OnLevelPassed(LevelPassed context)
+  //This should be tracks
+  private void OnTrackPassed(TrackPassed context)
   {
     if (m_launchPrepareSplash == null)
     { 
       m_launchPrepareSplash = Instantiate(LaunchPrepareSplash, HUDCanvas.transform);
       m_launchPrepareSplash.GetComponent<Animator>().SetTrigger("Blink");
     }
-    
-    foreach (var prompt in BeatPrompts)
-    {
-      Destroy(prompt.gameObject);
-    }
-    
-    BeatPrompts.Clear();
-    
-    foreach (var beat in context.Level.ExitTrack.GetNormalizedBeatTimes())
-    {
-      if (beat.Key.Action != BeatAction.Empty)
-      {
-        var beatPromptInstance =  Instantiate(BeatPromptTemplate, null);
-        beatPromptInstance.Beat = beat.Key;
-
-        Sprite actionSprite = null;
-        
-        if(ActionSprites.TryGetValue(beat.Key.Action, out actionSprite))
-        {
-          beatPromptInstance.FormatPrompt(true,true);
-          beatPromptInstance.PromptImageA.sprite = ActionSprites[beat.Key.Action];    
-          beatPromptInstance.PromptImageB.sprite = ActionSprites[beat.Key.Action];    
-        }
-        
-        beatPromptInstance.transform.position = OrbitHelpers.OrbitPointFromNormalisedPosition( context.Level.World.Orbit,beat.Value);
-      }
-    }
-
-    ClearedDisplay.text = (context.Level.Number+1).ToString();
-
   }
   
-  private void OnNewLevel(NewLevel context)
-  {
-    foreach (var beat in context.Level.Track.GetNormalizedBeatTimes())
-    {
-      if (beat.Key.Action != BeatAction.Empty)
-      {
-        var beatPromptInstance =  Instantiate(BeatPromptTemplate, null);
-        beatPromptInstance.Beat = beat.Key;
-
-        Sprite actionSprite = null;
-        
-        if(ActionSprites.TryGetValue(beat.Key.Action, out actionSprite))
-        {
-          beatPromptInstance.FormatPrompt(true,false);
-          beatPromptInstance.PromptImageA.sprite = ActionSprites[beat.Key.Action];    
-        }
-        
-        beatPromptInstance.transform.position = OrbitHelpers.OrbitPointFromNormalisedPosition( context.Level.World.Orbit, beat.Value);
-        
-        BeatPrompts.Add(beatPromptInstance);
-      }
-    }
-  }
+  // private void OnNewLevel(NewLevel context)
+  // {
+  //   foreach (var beat in context.Level.Track.NormalisedBeatTimes())
+  //   {
+  //     if (beat.Key.Action != BeatAction.Empty)
+  //     {
+  //       var beatPromptInstance =  Instantiate(BeatPromptTemplate, null);
+  //       beatPromptInstance.Beat = beat.Key;
+  //
+  //       Sprite actionSprite = null;
+  //       
+  //       if(ActionSprites.TryGetValue(beat.Key.Action, out actionSprite))
+  //       {
+  //         beatPromptInstance.FormatPrompt(true,false);
+  //         beatPromptInstance.PromptImageA.sprite = ActionSprites[beat.Key.Action];    
+  //       }
+  //       
+  //       beatPromptInstance.transform.position = OrbitHelpers.OrbitPointFromNormalisedPosition( context.Level.World.Orbit, beat.Value);
+  //       
+  //       BeatPrompts.Add(beatPromptInstance);
+  //     }
+  //   }
+  //}
 
   private void OnBeatAttempt(BeatAttemptEvent context)
   {
-    foreach (var beatPrompt in BeatPrompts)
-    {
-      if (beatPrompt.Beat == context.Beat)
-      {
-
         GameObject attemptSplash = null;
         GameObject newSplash = null;
         
@@ -332,11 +340,6 @@ public class UIHandler : MonoBehaviour
             .setOnUpdate((float val) => newSplash.GetComponent<CanvasGroup>().alpha =  val)
             .setOnComplete(() => Destroy(newSplash));
         }
-
-        return;
-      }
-      
-    }
   }
   
   private void Start()
@@ -367,3 +370,4 @@ public class UIHandler : MonoBehaviour
   //   BeatPrompts.Clear();
   // }
 }
+

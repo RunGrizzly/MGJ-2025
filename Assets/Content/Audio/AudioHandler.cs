@@ -1,10 +1,9 @@
-using System;
 using System.Collections;
 using Events;
 using Gameplay;
-using Gameplay.TrackEvents;
 using RotaryHeart.Lib.SerializableDictionary;
 using SGS29.Utilities;
+using TrackEvents;
 using UnityEngine;
 
 [System.Serializable]
@@ -41,16 +40,16 @@ public class AudioHandler : MonoBehaviour
   
    private void OnEnable()
   {
-    SM.Instance<EventManager>().RegisterListener<NewLevel>(OnNewLevel);
+    //SM.Instance<EventManager>().RegisterListener<NewLevel>(OnNewLevel);
     SM.Instance<EventManager>().RegisterListener<BeatAttemptEvent>(OnBeatAttempt);
     
-    SM.Instance<EventManager>().RegisterListener<GameManager.TransitionStarted>(OnTransitionStarted);
+    SM.Instance<EventManager>().RegisterListener<TransitionStarted>(OnTransitionStarted);
     
     SM.Instance<EventManager>().RegisterListener<TrackStarted>(OnTrackStarted);
     
-    SM.Instance<EventManager>().RegisterListener<GameOver>(OnGameOver);
+    SM.Instance<EventManager>().RegisterListener<RunEnded>(OnRunEnded);
     
-    SM.Instance<EventManager>().RegisterListener<MainMenu>(OnMainMenu);
+    SM.Instance<EventManager>().RegisterListener<RunStaged>(OnRunStaged);
     
     SoundscapeSourceB.Pause();
     EvaluateSoundscape();   
@@ -58,24 +57,24 @@ public class AudioHandler : MonoBehaviour
 
   private void OnDisable()
   {
-    SM.Instance<EventManager>().UnregisterListener<NewLevel>(OnNewLevel);
+    //SM.Instance<EventManager>().UnregisterListener<NewLevel>(OnNewLevel);
     SM.Instance<EventManager>().UnregisterListener<BeatAttemptEvent>(OnBeatAttempt);
     
-    SM.Instance<EventManager>().UnregisterListener<GameManager.TransitionStarted>(OnTransitionStarted);
+    SM.Instance<EventManager>().UnregisterListener<TransitionStarted>(OnTransitionStarted);
     
     SM.Instance<EventManager>().UnregisterListener<TrackStarted>(OnTrackStarted);
     
-    SM.Instance<EventManager>().UnregisterListener<GameOver>(OnGameOver);
+    SM.Instance<EventManager>().UnregisterListener<RunEnded>(OnRunEnded);
     
-    SM.Instance<EventManager>().UnregisterListener<MainMenu>(OnMainMenu);
+    SM.Instance<EventManager>().UnregisterListener<RunStaged>(OnRunStaged);
   }
 
-  private void OnMainMenu(MainMenu context)
+  private void OnRunStaged(RunStaged context)
   {
     SetSoundscape("mainmenu");
   }
 
-  private void OnGameOver(GameOver context)
+  private void OnRunEnded(RunEnded context)
   {
     SetSoundscape("gameover");
   }
@@ -85,7 +84,7 @@ public class AudioHandler : MonoBehaviour
     SetSoundscape("fast");
   }
 
-  private void OnTransitionStarted(GameManager.TransitionStarted contextj)
+  private void OnTransitionStarted(TransitionStarted transitionStarted)
   {
     SetSoundscape("slowest");
   }
@@ -107,10 +106,10 @@ public class AudioHandler : MonoBehaviour
   }
   
   
-  private void OnNewLevel(NewLevel context)
-  {
-   
-  }
+  // private void OnNewLevel(NewLevel context)
+  // {
+  //  
+  // }
   
   private void PlaySting(string stingID)
   {
