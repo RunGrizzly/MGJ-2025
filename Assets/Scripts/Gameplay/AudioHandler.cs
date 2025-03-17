@@ -113,14 +113,15 @@ public class AudioHandler : MonoBehaviour
   
   private void PlaySting(string stingID)
   {
-    StingAudioSource.Stop();
+    //StingAudioSource.Stop();
     
     AudioClip newSting = null;
     
     if (Stings.TryGetValue(stingID, out newSting))
     {
-      StingAudioSource.clip = newSting;
-      StingAudioSource.Play();
+      StingAudioSource.PlayOneShot(newSting);
+      // StingAudioSource.clip = newSting;
+      // StingAudioSource.Play();
     }
   }
 
