@@ -97,21 +97,21 @@ namespace Gameplay
             //How to get a random pattern
             var randomValue = Random.value;
 
-            if (randomValue > 0.9f)
+            if (randomValue > 0.65f)
             {
-                BeatPatternTwoOnOneOff(ActiveZoneBeats);             
+                BeatPatternThreeOnOneOff(ActiveZoneBeats);      
             }
-            else if (randomValue > 0.6f)
+            else if (randomValue > 0.35f)
             {
-                BeatPatternThreeOnOneOff(ActiveZoneBeats);             
+                BeatPatternTwoOnOneOff(ActiveZoneBeats);     
             }
-            else if (randomValue > 0.2f)
+            else if (randomValue > 0.25f)
             {
-                BeatPatternGeneric(ActiveZoneBeats,2,2);             
+                BeatPatternGeneric(ActiveZoneBeats,4,2);             
             }
             else
             {
-                BeatPatternEveryOther(ActiveZoneBeats);             
+                BeatPatternGeneric(ActiveZoneBeats,2,2);              
             }
             
             
