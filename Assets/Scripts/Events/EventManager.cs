@@ -45,11 +45,23 @@ namespace Events
         {
             var eventType = eventToDispatch.GetType();
             var handlers = EventListeners.Where(kvp => kvp.Key.IsAssignableFrom(eventType));
-
-            foreach (var handler in handlers)
+            
+            for (int i = 0; i < handlers.Count();i++)
             {
-                handler.Value.ForEach(e => ((Action<T>)e).Invoke(eventToDispatch));
+                var handler = handlers.ElementAt(i);
+
+                for (int j = 0; j < handler.Value.Count; j++)
+                {
+                    var val = (Action<T>)handler.Value[j];
+
+                    val.Invoke(eventToDispatch);
+                }
             }
+            
+            // foreach (var handler in handlers)
+            // {
+            //     handler.Value.ForEach(e => ((Action<T>)e).Invoke(eventToDispatch));
+            // }
         }
     }
 }
