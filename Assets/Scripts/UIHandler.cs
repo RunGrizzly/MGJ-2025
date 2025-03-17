@@ -25,7 +25,10 @@ public class BeatStateGameObjectDictionary : SerializableDictionaryBase<Beat.Sta
 public class UIHandler : MonoBehaviour
 {
   public CanvasGroup HUDCanvas = null;
+  
   public CanvasGroup GameOverSplash = null;
+  private CanvasGroup m_gameOverSplash = null;
+
   
   public CanvasGroup TransitionSplash = null;
   private CanvasGroup m_transitionSplash = null;
@@ -43,17 +46,19 @@ public class UIHandler : MonoBehaviour
 
   public BeatStateGameObjectDictionary AttemptSplashes = new BeatStateGameObjectDictionary();
 
+  public Image AttemptPipTemplate = null;
   public List<Image> AttemptPips = new List<Image>();
+  public Transform AttemptPipGroup = null;
   
   public TextMeshProUGUI ClearedDisplay = null;
   
   private void OnEnable()
   {
+    //Gameplay Events
     SM.Instance<EventManager>().RegisterListener<BeatAttemptEvent>(OnBeatAttempt);
     
+    //Track lifecycle events
     SM.Instance<EventManager>().RegisterListener<TrackPassed>(OnTrackPassed);
-    
-    SM.Instance<EventManager>().RegisterListener<RunEnded>(OnRunEnded);
     
     SM.Instance<EventManager>().RegisterListener<TrackStarted>(OnTrackStarted);
     
@@ -61,57 +66,71 @@ public class UIHandler : MonoBehaviour
     
     SM.Instance<EventManager>().RegisterListener<TrackResetEvent>(OnTrackReset);
     
+    //Transition lifecycle events
     SM.Instance<EventManager>().RegisterListener<TransitionStarted>(OnTransitionStarted);
     
     SM.Instance<EventManager>().RegisterListener<TransitionEnded>(OnTransitionEnded);
     
+    //Run life cycle events
     SM.Instance<EventManager>().RegisterListener<RunStaged>(OnRunStaged);
     
     SM.Instance<EventManager>().RegisterListener<RunUpdate>(OnRunUpdate);
+    
+    SM.Instance<EventManager>().RegisterListener<RunEnded>(OnRunEnded);
   }
   
   private void OnDisable()
   {
-    SM.Instance<EventManager>().UnregisterListener<TrackResetEvent>(OnTrackReset);
-    
+    //Gameplay Events
     SM.Instance<EventManager>().UnregisterListener<BeatAttemptEvent>(OnBeatAttempt);
     
+    //Track lifecycle events
     SM.Instance<EventManager>().UnregisterListener<TrackPassed>(OnTrackPassed);
-    
-    SM.Instance<EventManager>().UnregisterListener<RunEnded>(OnRunEnded);
     
     SM.Instance<EventManager>().UnregisterListener<TrackStarted>(OnTrackStarted);
     
     SM.Instance<EventManager>().UnregisterListener<TrackFailed>(OnTrackFailed);
     
+    SM.Instance<EventManager>().UnregisterListener<TrackResetEvent>(OnTrackReset);
+   
+    //Transition lifecycle events
     SM.Instance<EventManager>().UnregisterListener<TransitionStarted>(OnTransitionStarted);
     
     SM.Instance<EventManager>().UnregisterListener<TransitionEnded>(OnTransitionEnded);
 
+    //Run life cycle events
     SM.Instance<EventManager>().UnregisterListener<RunStaged>(OnRunStaged);
     
     SM.Instance<EventManager>().UnregisterListener<RunUpdate>(OnRunUpdate);
+    
+    SM.Instance<EventManager>().UnregisterListener<RunEnded>(OnRunEnded);
   }
   
   //The run was updated - sync UI info
   private void OnRunUpdate(RunUpdate context)
   {
     ClearedDisplay.text = context.Run.TracksPassed.ToString();
-    
-    for (int i = 0; i < AttemptPips.Count; i++)
+
+    foreach (var pip in AttemptPips)
     {
-      if (i < context.Run.RemainingAttempts)
-      {
-        AttemptPips[i].gameObject.SetActive(true);
-        continue;
-      }
-      
-      AttemptPips[i].gameObject.SetActive(false);
+      Destroy(pip.gameObject);
+    }
+
+    AttemptPips = new List<Image>();
+    
+    for (int i = 0; i < context.Run.RemainingAttempts; i++)
+    {
+     AttemptPips.Add(Instantiate(AttemptPipTemplate, AttemptPipGroup));
     }
   }
 
   private void OnRunStaged(RunStaged context)
   {
+    if (m_gameOverSplash != null)
+    {
+      Destroy(m_gameOverSplash.gameObject);
+    }
+    
     if (m_mainMenuSplash == null)
     { 
       m_mainMenuSplash = Instantiate(MainMenuSplash, HUDCanvas.transform);
@@ -119,7 +138,6 @@ public class UIHandler : MonoBehaviour
     }
     
     HUDCanvas.alpha = 0;
-    
   }
   
   private void OnTransitionStarted(TransitionStarted transitionStarted)
@@ -221,7 +239,12 @@ public class UIHandler : MonoBehaviour
   
   private void OnRunEnded(RunEnded context)
   {
-    var gameOverSplash = Instantiate(GameOverSplash, HUDCanvas.transform);
+    if (m_gameOverSplash != null)
+    {
+      Destroy(m_gameOverSplash.gameObject);
+    }
+    
+    m_gameOverSplash = Instantiate(GameOverSplash, HUDCanvas.transform);
   }
 
 
