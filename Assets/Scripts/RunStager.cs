@@ -24,7 +24,7 @@ public class Run
     public float Difficulty;
     public float DifficultyRamp;
     
-    public int MaxAttempts =10;
+    public int MaxAttempts = 5;
     public int RemainingAttempts;
 
     public List<PlayableTrack> Tracks = new List<PlayableTrack>();
@@ -34,10 +34,11 @@ public class Run
     
     public PlayableTrack NextTrack => Tracks[Tracks.Count - 1];
 
-    public Run(float difficulty, float difficultyRamp)
+    public Run(float difficulty, float difficultyRamp, int maxAttempts)
     {
         Difficulty = difficulty;
         DifficultyRamp = difficultyRamp;
+        MaxAttempts = maxAttempts;
         RemainingAttempts = MaxAttempts;
     }
 
@@ -50,6 +51,13 @@ public class Run
     
     public void End()
     {
+        foreach (var world in Worlds)
+        {
+           GameObject.Destroy(world.gameObject);
+        }
+        
+        Worlds.Clear();
+        
         SM.Instance<EventManager>().UnregisterListener<TrackFailed>(OnTrackFailed);
         SM.Instance<EventManager>().UnregisterListener<TrackPassed>(OnTrackPassed);
         SM.Instance<EventManager>().UnregisterListener<TransitionEnded>(OnTransitionEnded);
@@ -157,9 +165,9 @@ public class RunStager : MonoBehaviour
        //Base difficulty
        //Difficulty ramp
        //Difficulty will increase by difficulty ramp every track cleared
-       //Difficutly is normalised
-       //So a ramp of 0.01 will take 100 runs to get to full difficulty
-       Run newRun = new Run(0,0.01f);
+       //Difficulty is normalised
+       //So a ramp of 0.01 will take 100 tracks to get to full difficulty
+       Run newRun = new Run(0,0.01f,5);
  
        //Prepare two worlds
        //These will be index 0 and 1
@@ -185,6 +193,8 @@ public class RunStager : MonoBehaviour
        
        //Broadcast the new run that started
        GameManager.ins._eventManager.DispatchEvent(new RunStarted(newRun));
+       SM.Instance<EventManager>().DispatchEvent(new RunUpdate(newRun));
+       
        
        //Staging done
        //Destroy

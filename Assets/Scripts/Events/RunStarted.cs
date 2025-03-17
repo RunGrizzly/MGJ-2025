@@ -2,6 +2,7 @@
 {
     public class RunStaged : IEvent
     {
+        
     }
 
     public class RunStarted : IEvent

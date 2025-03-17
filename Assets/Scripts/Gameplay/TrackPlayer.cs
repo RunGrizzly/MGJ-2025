@@ -41,9 +41,23 @@ namespace Gameplay
             _actions.Ship.Action4.performed += _ => OnAction(BeatAction.Action4);
             _actions.Ship.Progress.performed += _ => OnAction(BeatAction.Transfer);
             
-            SM.Instance<EventManager>().RegisterListener<BeatAttemptEvent>(OnBeatAttempt);
+            //_actions.Ship.Enable();
+            
+            // SM.Instance<EventManager>().RegisterListener<RunEnded>(OnRunEnded);
         }
-        
+
+        private void OnRunEnded(RunEnded context)
+        {
+            //End the track coroutine
+            ActiveTrack = null;
+            
+            _actions.Ship.Disable();
+            
+            //Stop listening to inputs
+            SM.Instance<EventManager>().UnregisterListener<BeatAttemptEvent>(OnBeatAttempt);
+            SM.Instance<EventManager>().UnregisterListener<RunEnded>(OnRunEnded);
+        }
+
         private void OnDrawGizmos()
         {
             if (ActiveTrack == null || ActiveTrack.World == null || ActiveTrack.World.Orbit ==null)
@@ -126,8 +140,13 @@ namespace Gameplay
         {
             //Active track now listens
             ActiveTrack.Init();
+            
             yield return new WaitWhile(()=>ActiveTrack.Beats.Count == 0);
             
+            //Player listens to inputs
+            // _actions.Ship.Enable();
+            // SM.Instance<EventManager>().RegisterListener<RunEnded>(OnRunEnded);
+          
             //A cache so we can failsafe and know if the current track changed
             PlayableTrack trackInfo = ActiveTrack;
             
@@ -161,6 +180,8 @@ namespace Gameplay
                      //Pass along a beat attempt event
                      var beatEvent = new BeatAttemptEvent(currentBeat);
                      SM.Instance<EventManager>().DispatchEvent(beatEvent);
+                     
+                     Debug.LogFormat($"Track player detected a missed beat");
                     }
                 }
                 
@@ -186,7 +207,7 @@ namespace Gameplay
                     activeTime += Time.deltaTime;
                     deadTime = 0;
                     
-                    Debug.LogFormat($"Active time = {activeTime}");
+                    //Debug.LogFormat($"Active time = {activeTime}");
                 }
                 
                 else
@@ -197,7 +218,7 @@ namespace Gameplay
                     deadTime += Time.deltaTime;
                     activeTime = 0;
                     
-                    Debug.LogFormat($"Dead time = {deadTime}");
+                    //Debug.LogFormat($"Dead time = {deadTime}");
                 }
 
                 _progress += (bpsmod *Time.deltaTime);
@@ -220,16 +241,23 @@ namespace Gameplay
            //  ExitTracks =
            //  
            currentlyPlaying = StartCoroutine(PlayTrack(startTime));
+           
+           _actions.Ship.Enable();
+           SM.Instance<EventManager>().RegisterListener<RunEnded>(OnRunEnded);
+           SM.Instance<EventManager>().RegisterListener<BeatAttemptEvent>(OnBeatAttempt);
+           
            SM.Instance<EventManager>().DispatchEvent(new TrackStarted(ActiveTrack));
-            
+           
+        
             //This should respond
-            _actions.Ship.Enable();
+            // _actions.Ship.Enable();
         }
         
         private void OnBeatAttempt(BeatAttemptEvent context)
         {
             if (context.Beat.State == Beat.States.Failed || context.Beat.State == Beat.States.Missed )
             {
+                Debug.LogFormat($"Dispatching a beat attempt on a missed beat");
                 SM.Instance<EventManager>().DispatchEvent(new TrackFailed(ActiveTrack));
             }
             else if(context.Beat.Action == BeatAction.Transfer)
@@ -238,6 +266,10 @@ namespace Gameplay
                Debug.LogFormat($"We should clean up and do a transfer now");
                
                //Active track stops listening
+               SM.Instance<EventManager>().UnregisterListener<RunEnded>(OnRunEnded);
+               SM.Instance<EventManager>().UnregisterListener<BeatAttemptEvent>(OnBeatAttempt);
+               
+               
                ActiveTrack.Kill();
                PlayExitTrack();
                
@@ -341,32 +373,23 @@ namespace Gameplay
             return true;
         }
         
-        // //We passed the main track
-        // //Set up an exit track and spline
-        // private void OnMainTrackPassed(TrackPassed trackPassed)
-        // {
-        //     //If we are on a main track
-        //     //Go to exit track
-        //     // _currentState = GameplayState.OnExitTrack;
-        //     PlayExitTrack();
-        //     //Tick(_progress);
-        //     //This should be responding to a track passed not responding to it.
-        //     // SM.Instance<EventManager>().DispatchEvent(new LevelPassed(_currentLevel));
-        // }
-
         private void PlayExitTrack()
         {
-            ExitTrack = GameManager.ins.Runs[0].NextTrack;
+            SM.Instance<EventManager>().UnregisterListener<RunEnded>(OnRunEnded);
             
-            //Create a new spline
-            //var spline = new Spline();
+            var currentOrbit = ActiveTrack.World.Orbit;
+            //Get the next track from the run
+            var nextOrbit = GameManager.ins.Runs[0].NextTrack.World.Orbit;
             
-            //Create 3 positions
+            //Create positions
             //The current player position
-            var start = OrbitHelpers.OrbitPointFromNormalisedPosition(ActiveTrack.World.Orbit, _progress);
+            var start = OrbitHelpers.OrbitPointFromNormalisedPosition(currentOrbit, _progress);
             
             //The new position at norm 0
-            var end = OrbitHelpers.OrbitPointFromNormalisedPosition(ExitTrack.World.Orbit, 0f);
+            var end = OrbitHelpers.OrbitPointFromNormalisedPosition(nextOrbit, 0f);
+            
+            //Kill the current track coroutine
+            ActiveTrack = null;
             
             //Some intermediate positions
             var inta = Vector3.Lerp(start, end, 0.25f);
@@ -376,17 +399,12 @@ namespace Gameplay
             Vector3[] splinePos = new[] { start, inta, intb, intc, end };
             var ltspline = new LTSpline(splinePos, false);
             
-            //Kill the current track
-            ActiveTrack = null;
+            //Stop listening to inputs
+           _actions.Ship.Disable();
             
-            //New definition
-            //Get a random playable track
-            var randomTrackDefinition = GameManager.ins.TrackGenerator.GetRandomTrackDefinition(GameManager.ins.Runs[0].Difficulty);
-        
-            // //Set up the first playable track
-            // PlayableTrack newPlayableTrack = new PlayableTrack(randomTrackDefinition, GameManager.ins.Runs[0].Worlds[GameManager.ins.Runs[0].TracksComplete],GameManager.ins.Runs[0].TracksComplete+1);
-
-
+            //Create a new spline
+            //var spline = new Spline();
+            
             var position = GameManager.ins._playerShip.transform.position;
             
             //Do a transfer
@@ -456,10 +474,7 @@ namespace Gameplay
         //Manually setting progress?
         _progress = 0;
         
-        // //Make sure the callback removes on transition ended
-        // GameManager.ins.SplineAnimate.Completed -= OnTransitionEnded;
-        // GameManager.ins.SplineAnimate?.Container?.KnotLinkCollection.Clear();
-        
+
         
         //SM.Instance<EventManager>().DispatchEvent(new TransitionEnded());
     }

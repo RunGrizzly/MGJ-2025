@@ -5,6 +5,7 @@ using Gameplay;
 using SGS29.Utilities;
 using TrackEvents;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public enum GameState
 {
@@ -20,18 +21,13 @@ public class GameManager : MonoBehaviour
     public static GameManager ins = null;
 
     public TrackPlayer _trackPlayer;
-
-    //Our list of definitions that will be turned into tracks
-    public List<TrackDefinition> TrackDefinitions = new List<TrackDefinition>();
-
+    
     public InputSystem_Actions _actions;
     
     public EventManager _eventManager;
     public UIHandler UIHandler;
     public TrackGenerator TrackGenerator;
     
-    public GameState CurrentGameState = GameState.InHangar;
-
     [SerializeField] private GameObject _shipTemplate;
 
     public Transform _playerShip = null;
@@ -77,6 +73,13 @@ public class GameManager : MonoBehaviour
         //Spawn a new run stager into the HUD canvas
         //This will do all the transient prep work for staging a new run
         _activeRunStager = Instantiate(RunStagerTemplate,UIHandler.HUDCanvas.transform);
+        
+        _actions.Ship.Progress.performed -= StageNewRun;
+    }
+    
+    private void StageNewRun(InputAction.CallbackContext context)
+    {
+        StageNewRun();
     }
     
     private void OnRunStarted(RunStarted context)
@@ -87,7 +90,10 @@ public class GameManager : MonoBehaviour
     private void OnRunEnded(RunEnded context)
     {
         //Maybe we want to go to a summary screen or something?
-       StageNewRun();
+       
+        //We don't want to do this right away - only when the player progresses
+        //Subscribe to inputs
+        _actions.Ship.Progress.performed += StageNewRun;
     }
 }
 
